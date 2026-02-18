@@ -2,1629 +2,1373 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>STUDIOCUT PRO — Editor Profesional</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>CineEdit ULTRA — Professional Editing Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg0: #0a0a0f;
-  --bg1: #111118;
-  --bg2: #18181f;
-  --bg3: #22222d;
-  --bg4: #2e2e3a;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --text1: #f0f0f8;
-  --text2: #9090b0;
-  --text3: #606080;
-  --accent: #7c6aff;
-  --accent2: #ff6ac1;
-  --accent3: #6affb4;
-  --accent4: #ffcc44;
-  --red: #ff4466;
-  --glow: 0 0 30px rgba(124,106,255,0.25);
-  --glow2: 0 0 20px rgba(255,106,193,0.2);
+@keyframes grain{0%,100%{transform:translate(0,0)}10%{transform:translate(-5%,-10%)}20%{transform:translate(-15%,5%)}30%{transform:translate(7%,-25%)}40%{transform:translate(-5%,25%)}50%{transform:translate(-15%,10%)}60%{transform:translate(15%,0%)}70%{transform:translate(0%,15%)}80%{transform:translate(3%,35%)}90%{transform:translate(-10%,10%)}}
+@keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-20px)}}
+@keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+@keyframes glitch{0%{clip-path:inset(0 0 0 0)}20%{clip-path:inset(40% 0 50% 0)}40%{clip-path:inset(10% 0 80% 0)}60%{clip-path:inset(70% 0 20% 0)}80%{clip-path:inset(30% 0 60% 0)}100%{clip-path:inset(0 0 0 0)}}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(255,193,7,0.3)}50%{box-shadow:0 0 40px rgba(255,193,7,0.6),0 0 60px rgba(255,193,7,0.3)}}
+@keyframes border-flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+:root{
+  --bg-primary:#0d0d12;
+  --bg-secondary:#16161d;
+  --bg-tertiary:#1e1e28;
+  --accent-gold:#ffc107;
+  --accent-cyan:#00d9ff;
+  --accent-magenta:#ff006e;
+  --accent-lime:#ccff00;
+  --text-primary:#f5f5f7;
+  --text-secondary:#a0a0ab;
+  --text-muted:#6b6b75;
+  --border-subtle:rgba(255,255,255,0.06);
+  --border-bright:rgba(255,193,7,0.3);
+  --glass:rgba(255,255,255,0.03);
+  --shadow-heavy:0 20px 60px rgba(0,0,0,0.5);
+  --font-display:'Bebas Neue',sans-serif;
+  --font-mono:'Space Mono',monospace;
+  --font-body:'Outfit',sans-serif;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ANIMATED BACKGROUND */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle 800px at 20% 30%,rgba(255,193,7,0.08) 0%,transparent 50%),
+    radial-gradient(circle 600px at 80% 70%,rgba(0,217,255,0.06) 0%,transparent 50%),
+    radial-gradient(circle 700px at 50% 50%,rgba(255,0,110,0.04) 0%,transparent 50%);
+  pointer-events:none;
+  z-index:0;
+  animation:float 20s ease-in-out infinite;
+}
+
+/* GRAIN TEXTURE */
+body::after{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  opacity:0.6;
+  pointer-events:none;
+  z-index:1;
+  animation:grain 8s steps(10) infinite;
+}
+
+/* HEADER */
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(13,13,18,0.85);
+  backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border-subtle);
+  padding:clamp(12px,2vw,20px) 0;
+}
+
+.header::after{
+  content:'';
+  position:absolute;
+  bottom:-1px;
+  left:0;
+  right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent-gold) 50%,transparent);
+  opacity:0.3;
+}
+
+.header-inner{
+  max-width:1600px;
+  margin:0 auto;
+  padding:0 clamp(16px,4vw,40px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:clamp(20px,4vw,40px);
+  position:relative;
+  z-index:2;
+}
+
+.logo-area{
+  display:flex;
+  align-items:center;
+  gap:clamp(12px,2vw,20px);
+}
+
+.logo-icon{
+  width:clamp(44px,8vw,56px);
+  height:clamp(44px,8vw,56px);
+  background:linear-gradient(135deg,var(--accent-gold) 0%,var(--accent-cyan) 100%);
+  border-radius:clamp(8px,1.5vw,12px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(1.2em,3vw,1.6em);
+  position:relative;
+  animation:pulse-glow 3s ease-in-out infinite;
+}
+
+.logo-icon::before{
+  content:'';
+  position:absolute;
+  inset:-2px;
+  background:linear-gradient(135deg,var(--accent-gold),var(--accent-cyan),var(--accent-magenta));
+  border-radius:inherit;
+  z-index:-1;
+  opacity:0;
+  transition:opacity 0.3s;
+}
+
+.logo-icon:hover::before{opacity:1}
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg0);
-  color: var(--text1);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:var(--bg1)}
-::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
-
-/* Animated Background */
-.bg-noise {
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
-}
-
-.bg-glow {
-  position: fixed;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(124,106,255,0.08) 0%, transparent 70%);
-  top: -200px;
-  right: -200px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Header */
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(10,10,15,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 clamp(16px,3vw,32px);
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.1em,3vw,1.4em);
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -0.5px;
-}
-
-.logo span {
-  font-weight: 400;
-  -webkit-text-fill-color: var(--text2);
-}
-
-.header-badge {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.75em;
-  font-weight: 600;
-  color: white;
-  letter-spacing: 0.5px;
-}
-
-/* Nav */
-.nav {
-  display: flex;
-  background: var(--bg1);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  scrollbar-width: none;
-  position: relative;
-  z-index: 10;
-}
-.nav::-webkit-scrollbar{display:none}
-
-.nav-btn {
-  flex: 0 0 auto;
-  padding: clamp(12px,2.5vw,16px) clamp(14px,3vw,24px);
-  background: transparent;
-  border: none;
-  color: var(--text3);
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(0.8em,2vw,0.95em);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-  position: relative;
-}
+.logo-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.logo-title{
+  font-family:var(--font-display);
+  font-size:clamp(1.4em,3.5vw,2em);
+  letter-spacing:2px;
+  line-height:0.9;
+  background:linear-gradient(135deg,var(--text-primary),var(--accent-gold));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.logo-subtitle{
+  font-family:var(--font-mono);
+  font-size:clamp(0.5em,1.2vw,0.65em);
+  letter-spacing:3px;
+  color:var(--text-muted);
+  text-transform:uppercase;
+}
+
+.header-badges{
+  display:flex;
+  gap:clamp(6px,1.5vw,10px);
+  flex-wrap:wrap;
+}
+
+.badge{
+  font-family:var(--font-mono);
+  font-size:clamp(0.55em,1.1vw,0.7em);
+  padding:clamp(4px,1vw,6px) clamp(10px,2vw,14px);
+  border-radius:100px;
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  position:relative;
+  overflow:hidden;
+}
+
+.badge::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,var(--accent-gold),var(--accent-cyan));
+  opacity:0.15;
+}
+
+.badge-live{
+  color:var(--accent-magenta);
+  border:1px solid rgba(255,0,110,0.3);
+  animation:pulse-glow 2s ease infinite;
+}
+
+.badge-pro{
+  color:var(--accent-gold);
+  border:1px solid rgba(255,193,7,0.3);
+}
+
+.badge-free{
+  color:var(--accent-lime);
+  border:1px solid rgba(204,255,0,0.3);
+}
+
+/* NAVIGATION */
+.nav{
+  background:var(--bg-secondary);
+  border-bottom:1px solid var(--border-subtle);
+  position:relative;
+  overflow:hidden;
+}
+
+.nav::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,193,7,0.5) 50%,transparent);
+  opacity:0.3;
+}
+
+.nav-inner{
+  max-width:1600px;
+  margin:0 auto;
+  padding:0 clamp(16px,4vw,40px);
+  display:flex;
+  gap:clamp(4px,1vw,8px);
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.nav-inner::-webkit-scrollbar{display:none}
+
+.nav-tab{
+  font-family:var(--font-mono);
+  font-size:clamp(0.7em,1.4vw,0.85em);
+  font-weight:700;
+  padding:clamp(14px,2.5vw,18px) clamp(16px,3vw,24px);
+  border:none;
+  background:transparent;
+  color:var(--text-secondary);
+  cursor:pointer;
+  white-space:nowrap;
+  position:relative;
+  transition:color 0.3s ease;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+.nav-tab::before{
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%) scaleX(0);
+  width:80%;
+  height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent-gold),transparent);
+  transition:transform 0.3s ease;
+}
+
+.nav-tab:hover{
+  color:var(--text-primary);
+}
+
+.nav-tab.active{
+  color:var(--accent-gold);
+}
+
+.nav-tab.active::before{
+  transform:translateX(-50%) scaleX(1);
+}
+
+/* MAIN CONTAINER */
+.container{
+  max-width:1600px;
+  margin:0 auto;
+  padding:clamp(20px,4vw,60px) clamp(16px,4vw,40px);
+  position:relative;
+  z-index:2;
+}
+
+.section{
+  display:none;
+  animation:fadeUp 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+
+.section.active{display:block}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* HERO SECTION */
+.hero{
+  text-align:center;
+  padding:clamp(40px,8vw,120px) clamp(20px,4vw,40px);
+  position:relative;
+}
+
+.hero-label{
+  font-family:var(--font-mono);
+  font-size:clamp(0.65em,1.3vw,0.8em);
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--accent-cyan);
+  margin-bottom:clamp(16px,3vw,24px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+
+.hero-label::before,.hero-label::after{
+  content:'';
+  width:clamp(30px,6vw,60px);
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent-cyan));
+}
+
+.hero-label::after{
+  background:linear-gradient(90deg,var(--accent-cyan),transparent);
+}
+
+.hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(2.5em,8vw,7em);
+  line-height:0.95;
+  letter-spacing:4px;
+  margin-bottom:clamp(20px,3vw,32px);
+  position:relative;
+  display:inline-block;
+}
+
+.hero-title .gradient-text{
+  background:linear-gradient(135deg,var(--text-primary) 0%,var(--accent-gold) 50%,var(--accent-cyan) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:border-flow 8s ease infinite;
+  background-size:200% 200%;
+}
+
+.hero-subtitle{
+  font-family:var(--font-body);
+  font-size:clamp(0.95em,2vw,1.3em);
+  font-weight:300;
+  color:var(--text-secondary);
+  max-width:700px;
+  margin:0 auto clamp(32px,5vw,48px);
+  line-height:1.7;
+}
+
+.hero-cta{
+  display:flex;
+  gap:clamp(12px,2.5vw,20px);
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+/* BUTTONS */
+.btn{
+  font-family:var(--font-mono);
+  font-size:clamp(0.75em,1.5vw,0.9em);
+  font-weight:700;
+  padding:clamp(12px,2.5vw,16px) clamp(24px,4vw,40px);
+  border-radius:clamp(6px,1.2vw,8px);
+  border:none;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+  text-transform:uppercase;
+  letter-spacing:2px;
+  display:inline-flex;
+  align-items:center;
+  gap:clamp(8px,1.5vw,12px);
+  white-space:nowrap;
+}
+
+.btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);
+  opacity:0;
+  transition:opacity 0.3s;
+}
+
+.btn:hover::before{opacity:1}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent-gold) 0%,#ffa000 100%);
+  color:#000;
+  box-shadow:0 8px 32px rgba(255,193,7,0.3);
+}
+
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 40px rgba(255,193,7,0.5);
+}
+
+.btn-secondary{
+  background:rgba(255,255,255,0.05);
+  color:var(--text-primary);
+  border:1px solid var(--border-bright);
+  box-shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+
+.btn-secondary:hover{
+  background:rgba(255,255,255,0.08);
+  border-color:var(--accent-cyan);
+  box-shadow:0 8px 32px rgba(0,217,255,0.2);
+}
+
+/* FEATURE GRID */
+.feature-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));
+  gap:clamp(16px,3vw,24px);
+  margin-top:clamp(40px,6vw,80px);
+}
+
+.feature-card{
+  background:var(--bg-secondary);
+  border:1px solid var(--border-subtle);
+  border-radius:clamp(12px,2vw,16px);
+  padding:clamp(24px,4vw,36px);
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  transition:all 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+
+.feature-card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,transparent,rgba(255,193,7,0.05));
+  opacity:0;
+  transition:opacity 0.4s;
+}
 
-.nav-btn:hover { color: var(--text1); background: var(--bg2); }
+.feature-card:hover{
+  transform:translateY(-8px);
+  border-color:var(--border-bright);
+  box-shadow:var(--shadow-heavy),0 0 40px rgba(255,193,7,0.15);
+}
+
+.feature-card:hover::before{opacity:1}
 
-.nav-btn.active {
-  color: var(--accent);
+.feature-icon{
+  width:clamp(56px,10vw,72px);
+  height:clamp(56px,10vw,72px);
+  border-radius:clamp(10px,2vw,14px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(1.8em,4vw,2.4em);
+  margin-bottom:clamp(16px,3vw,24px);
+  position:relative;
 }
 
-.nav-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
+.feature-icon.gold{
+  background:linear-gradient(135deg,rgba(255,193,7,0.2),rgba(255,193,7,0.05));
+  border:1px solid rgba(255,193,7,0.3);
 }
 
-/* Main Content */
-.content {
-  position: relative;
-  z-index: 1;
-  padding: clamp(16px,3vw,28px);
-  max-width: 1600px;
-  margin: 0 auto;
+.feature-icon.cyan{
+  background:linear-gradient(135deg,rgba(0,217,255,0.2),rgba(0,217,255,0.05));
+  border:1px solid rgba(0,217,255,0.3);
 }
 
-.section { display: none; animation: fadeUp 0.3s ease; }
-.section.active { display: block; }
+.feature-icon.magenta{
+  background:linear-gradient(135deg,rgba(255,0,110,0.2),rgba(255,0,110,0.05));
+  border:1px solid rgba(255,0,110,0.3);
+}
+
+.feature-icon.lime{
+  background:linear-gradient(135deg,rgba(204,255,0,0.2),rgba(204,255,0,0.05));
+  border:1px solid rgba(204,255,0,0.3);
+}
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+.feature-title{
+  font-family:var(--font-display);
+  font-size:clamp(1.3em,2.8vw,1.8em);
+  letter-spacing:1px;
+  margin-bottom:clamp(8px,1.5vw,12px);
+  color:var(--text-primary);
 }
 
-/* Hero Section */
-.hero {
-  text-align: center;
-  padding: clamp(30px,6vw,80px) 20px;
+.feature-desc{
+  font-size:clamp(0.85em,1.7vw,1em);
+  color:var(--text-secondary);
+  line-height:1.6;
+}
+
+.feature-arrow{
+  position:absolute;
+  top:clamp(20px,3vw,28px);
+  right:clamp(20px,3vw,28px);
+  font-size:clamp(1.2em,2.5vw,1.5em);
+  color:var(--text-muted);
+  transition:all 0.3s;
+}
+
+.feature-card:hover .feature-arrow{
+  color:var(--accent-gold);
+  transform:translate(4px,-4px);
+}
+
+/* EDITOR LAYOUT */
+.editor-layout{
+  display:grid;
+  grid-template-columns:1fr clamp(380px,35vw,520px);
+  gap:clamp(20px,3vw,32px);
+  align-items:start;
+}
+
+@media(max-width:1100px){
+  .editor-layout{
+    grid-template-columns:1fr;
+  }
+}
+
+/* PREVIEW PANEL */
+.preview-panel{
+  background:var(--bg-secondary);
+  border:1px solid var(--border-subtle);
+  border-radius:clamp(12px,2vw,16px);
+  overflow:hidden;
+  position:sticky;
+  top:clamp(90px,12vw,120px);
+}
+
+.preview-box{
+  background:#000;
+  aspect-ratio:16/9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.preview-box::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,transparent 30%,rgba(255,193,7,0.03));
+  pointer-events:none;
+}
+
+#liveCanvas,#videoEl{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+}
+
+.live-indicator{
+  position:absolute;
+  top:16px;
+  left:16px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 14px;
+  background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,0,110,0.4);
+  border-radius:100px;
+  font-family:var(--font-mono);
+  font-size:0.7em;
+  font-weight:700;
+  letter-spacing:2px;
+  color:var(--accent-magenta);
+  text-transform:uppercase;
+}
+
+.live-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--accent-magenta);
+  animation:pulse-glow 1.5s ease infinite;
+}
+
+.filter-tag{
+  position:absolute;
+  top:16px;
+  right:16px;
+  padding:6px 14px;
+  background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,193,7,0.4);
+  border-radius:100px;
+  font-family:var(--font-mono);
+  font-size:0.7em;
+  font-weight:700;
+  letter-spacing:1px;
+  color:var(--accent-gold);
+}
+
+.stats-bar{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(80px,1fr));
+  gap:1px;
+  background:var(--border-subtle);
+  border-top:1px solid var(--border-subtle);
+}
+
+.stat{
+  background:var(--bg-tertiary);
+  padding:clamp(12px,2vw,16px);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.stat-label{
+  font-family:var(--font-mono);
+  font-size:clamp(0.6em,1.1vw,0.7em);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+
+.stat-value{
+  font-family:var(--font-mono);
+  font-size:clamp(0.8em,1.5vw,0.95em);
+  font-weight:700;
+  color:var(--accent-gold);
+}
+
+/* TOOLS PANEL */
+.tools-panel{
+  background:var(--bg-secondary);
+  border:1px solid var(--border-subtle);
+  border-radius:clamp(12px,2vw,16px);
+  overflow:hidden;
+}
+
+.tools-tabs{
+  display:flex;
+  background:var(--bg-tertiary);
+  border-bottom:1px solid var(--border-subtle);
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.tools-tabs::-webkit-scrollbar{display:none}
+
+.tool-tab{
+  font-family:var(--font-mono);
+  font-size:clamp(0.65em,1.3vw,0.75em);
+  font-weight:700;
+  padding:clamp(12px,2vw,16px) clamp(16px,3vw,20px);
+  border:none;
+  background:transparent;
+  color:var(--text-muted);
+  cursor:pointer;
+  white-space:nowrap;
+  position:relative;
+  transition:color 0.3s;
+  letter-spacing:1px;
+  text-transform:uppercase;
 }
 
-.hero-tag {
-  display: inline-block;
-  background: rgba(124,106,255,0.12);
-  border: 1px solid rgba(124,106,255,0.3);
-  color: var(--accent);
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: clamp(0.75em,1.8vw,0.85em);
-  font-weight: 600;
-  margin-bottom: 20px;
-  letter-spacing: 0.5px;
+.tool-tab::after{
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:2px;
+  background:var(--accent-gold);
+  transform:scaleX(0);
+  transition:transform 0.3s;
+}
+
+.tool-tab:hover{color:var(--text-secondary)}
+.tool-tab.active{color:var(--accent-gold)}
+.tool-tab.active::after{transform:scaleX(1)}
+
+.tools-body{
+  padding:clamp(20px,3vw,32px);
+}
+
+.tool-section{
+  display:none;
+}
+
+.tool-section.active{
+  display:block;
+  animation:fadeUp 0.3s ease;
+}
+
+.section-label{
+  font-family:var(--font-mono);
+  font-size:clamp(0.65em,1.2vw,0.75em);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:clamp(12px,2vw,16px);
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
+
+.section-label::before{
+  content:'';
+  width:3px;
+  height:12px;
+  background:var(--accent-gold);
+}
 
-.hero h1 {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(2em,7vw,5em);
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, var(--text1) 0%, var(--text2) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* FILTER GRID */
+.filter-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(clamp(75px,14vw,90px),1fr));
+  gap:clamp(8px,1.5vw,12px);
 }
 
-.hero h1 .accent {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.filter-chip{
+  background:var(--bg-tertiary);
+  border:1px solid var(--border-subtle);
+  border-radius:clamp(6px,1.2vw,8px);
+  padding:clamp(6px,1.2vw,8px);
+  cursor:pointer;
+  transition:all 0.3s;
+  overflow:hidden;
 }
 
-.hero p {
-  color: var(--text2);
-  font-size: clamp(0.95em,2.5vw,1.15em);
-  max-width: 600px;
-  margin: 0 auto 40px;
-  line-height: 1.7;
+.filter-chip:hover{
+  border-color:var(--border-bright);
+  transform:translateY(-2px);
 }
 
-.hero-btns {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 60px;
+.filter-chip.active{
+  border-color:var(--accent-gold);
+  background:rgba(255,193,7,0.1);
 }
 
-/* Cards Grid */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px,100%), 1fr));
-  gap: clamp(10px,2vw,16px);
-  margin: 30px 0;
+.filter-thumb{
+  width:100%;
+  aspect-ratio:16/10;
+  background:linear-gradient(135deg,#222,#444);
+  border-radius:4px;
+  margin-bottom:6px;
+  overflow:hidden;
 }
 
-.card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: clamp(20px,4vw,28px);
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
+.filter-label{
+  font-family:var(--font-mono);
+  font-size:clamp(0.65em,1.2vw,0.75em);
+  font-weight:700;
+  text-align:center;
+  color:var(--text-secondary);
+  letter-spacing:0.5px;
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(124,106,255,0.05) 0%, transparent 100%);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.card:hover {
-  border-color: var(--border2);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3), var(--glow);
+.filter-chip.active .filter-label{
+  color:var(--accent-gold);
 }
 
-.card:hover::before { opacity: 1; }
-
-.card-icon {
-  font-size: clamp(2em,5vw,2.5em);
-  margin-bottom: 16px;
-  display: block;
+/* PRESET CARDS */
+.preset-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(clamp(140px,25vw,180px),1fr));
+  gap:clamp(12px,2vw,16px);
+  margin-top:clamp(24px,4vw,40px);
 }
 
-.card h3 {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(1.1em,2.5vw,1.3em);
-  font-weight: 700;
-  margin-bottom: 8px;
+.preset-card{
+  background:var(--bg-secondary);
+  border:1px solid var(--border-subtle);
+  border-radius:clamp(10px,1.8vw,12px);
+  padding:clamp(16px,3vw,24px);
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.3s;
+  position:relative;
+  overflow:hidden;
 }
 
-.card p {
-  color: var(--text2);
-  font-size: clamp(0.82em,1.8vw,0.92em);
-  line-height: 1.6;
-}
-
-.card .card-badge {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(124,106,255,0.15);
-  border: 1px solid rgba(124,106,255,0.3);
-  color: var(--accent);
-  padding: 3px 10px;
-  border-radius: 10px;
-  font-size: 0.7em;
-  font-weight: 600;
-}
-
-/* Stats */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
-  gap: clamp(8px,2vw,16px);
-  margin: 40px 0;
-}
-
-.stat {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: clamp(16px,3vw,24px);
-  text-align: center;
-}
-
-.stat-num {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(1.5em,4vw,2.5em);
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.stat-label {
-  color: var(--text2);
-  font-size: clamp(0.75em,1.8vw,0.85em);
-  margin-top: 4px;
-}
-
-/* Editor Section */
-.editor-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(12px,2vw,20px);
-}
+.preset-card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,transparent,rgba(255,193,7,0.05));
+  opacity:0;
+  transition:opacity 0.3s;
+}
 
-/* Toolbar */
-.toolbar {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 16px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.tool-btn {
-  padding: 8px 14px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text2);
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(0.75em,1.8vw,0.85em);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.tool-btn:hover, .tool-btn:active {
-  background: var(--bg4);
-  color: var(--text1);
-  border-color: var(--border2);
-}
-
-.tool-divider {
-  width: 1px;
-  height: 24px;
-  background: var(--border);
-  flex-shrink: 0;
-}
-
-/* Preview */
-.preview-wrap {
-  background: #000;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-  min-height: clamp(260px, 45vw, 480px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.preview-wrap img,
-.preview-wrap video {
-  max-width: 100%;
-  max-height: 480px;
-  object-fit: contain;
-}
-
-.preview-overlay-text {
-  position: absolute;
-  pointer-events: none;
-  font-family: 'Syne', sans-serif;
-  font-size: 2em;
-  font-weight: 800;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-  white-space: pre-wrap;
-  word-break: break-word;
-  z-index: 10;
-  cursor: move;
-  pointer-events: all;
-  user-select: none;
-}
-
-.drop-zone {
-  text-align: center;
-  padding: clamp(20px,5vw,40px);
-  cursor: pointer;
-  width: 100%;
-}
-
-.drop-zone .dz-icon {
-  font-size: clamp(3em,8vw,5em);
-  margin-bottom: 16px;
-  opacity: 0.3;
-}
-
-.drop-zone p {
-  color: var(--text3);
-  font-size: clamp(0.9em,2.2vw,1.05em);
-  margin-bottom: 20px;
-}
-
-.drop-zone.drag-over {
-  background: rgba(124,106,255,0.08);
-  border: 2px dashed var(--accent);
-  border-radius: 12px;
-}
-
-/* Timeline */
-.timeline-wrap {
-  background: var(--bg1);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  overflow-x: auto;
-}
-
-.timeline-title {
-  color: var(--text2);
-  font-size: 0.8em;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.timeline-track {
-  display: flex;
-  gap: 6px;
-  min-width: min-content;
-  padding-bottom: 4px;
-}
-
-.t-clip {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border-radius: 8px;
-  padding: clamp(10px,2vw,14px) clamp(12px,2.5vw,18px);
-  min-width: clamp(90px,20vw,130px);
-  color: white;
-  font-size: clamp(0.75em,1.8vw,0.85em);
-  font-weight: 600;
-  position: relative;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.t-clip:hover { opacity: 0.9; }
-
-.t-clip-remove {
-  position: absolute;
-  top: -7px;
-  right: -7px;
-  background: var(--red);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.t-clip-add {
-  background: var(--bg3);
-  border: 2px dashed var(--border2);
-  border-radius: 8px;
-  padding: 12px 20px;
-  min-width: 90px;
-  color: var(--text3);
-  font-size: 0.85em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.t-clip-add:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/* Tools Panel */
-.tools-panel {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-/* Tab bar */
-.tab-bar {
-  display: flex;
-  background: var(--bg1);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tab-bar::-webkit-scrollbar { display: none; }
-
-.tab-btn {
-  flex: 0 0 auto;
-  padding: clamp(10px,2vw,14px) clamp(12px,2.5vw,20px);
-  background: transparent;
-  border: none;
-  color: var(--text3);
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(0.75em,1.8vw,0.85em);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-  position: relative;
-}
-
-.tab-btn:hover { color: var(--text1); }
-
-.tab-btn.active {
-  color: var(--accent);
-  background: var(--bg2);
-}
-
-.tab-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 8px;
-  right: 8px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 2px;
-}
-
-/* Panel Content */
-.panel-body {
-  padding: clamp(16px,3vw,24px);
-  display: none;
-}
-
-.panel-body.active { display: block; }
-
-.panel-section {
-  margin-bottom: 24px;
-}
-
-.panel-label {
-  font-size: 0.7em;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text3);
-  margin-bottom: 12px;
-}
-
-/* Filter Buttons */
-.filter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(clamp(72px,15vw,88px), 1fr));
-  gap: clamp(6px,1.5vw,10px);
-}
-
-.filter-chip {
-  padding: clamp(8px,2vw,11px) 8px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text2);
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(0.72em,1.7vw,0.82em);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: center;
-}
-
-.filter-chip:hover {
-  background: var(--bg4);
-  color: var(--text1);
-  border-color: var(--border2);
-  transform: translateY(-1px);
-}
-
-.filter-chip.active {
-  background: rgba(124,106,255,0.15);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/* Effect Chips */
-.effect-chip {
-  padding: clamp(10px,2.5vw,14px) 8px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text2);
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(0.72em,1.7vw,0.82em);
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: center;
-}
-
-.effect-chip:hover {
-  background: rgba(255,106,193,0.1);
-  border-color: var(--accent2);
-  color: var(--accent2);
-  transform: translateY(-1px);
-}
-
-.effect-chip.active {
-  background: rgba(255,106,193,0.15);
-  border-color: var(--accent2);
-  color: var(--accent2);
-}
-
-/* Sliders */
-.slider-row {
-  margin-bottom: 18px;
-}
-
-.slider-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.slider-name {
-  font-size: clamp(0.78em,1.8vw,0.88em);
-  color: var(--text2);
-  font-weight: 500;
-}
-
-.slider-val {
-  font-size: 0.8em;
-  font-weight: 700;
-  color: var(--accent);
-  font-family: 'Syne', sans-serif;
-}
-
-input[type=range] {
-  width: 100%;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--bg4);
-  outline: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-}
-
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px rgba(124,106,255,0.5);
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-input[type=range]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: none;
-  cursor: pointer;
-}
-
-/* Speed Grid */
-.speed-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(clamp(58px,13vw,75px), 1fr));
-  gap: clamp(6px,1.5vw,8px);
-}
-
-.speed-chip {
-  padding: clamp(8px,2vw,12px) 8px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text2);
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(0.72em,1.7vw,0.82em);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: center;
-}
-
-.speed-chip:hover {
-  background: rgba(106,255,180,0.1);
-  border-color: var(--accent3);
-  color: var(--accent3);
-}
-
-.speed-chip.active {
-  background: rgba(106,255,180,0.12);
-  border-color: var(--accent3);
-  color: var(--accent3);
-}
-
-/* Aspect Ratio */
-.aspect-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(clamp(70px,15vw,90px), 1fr));
-  gap: clamp(6px,1.5vw,10px);
-}
-
-.aspect-chip {
-  padding: clamp(10px,2.5vw,14px) 8px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text2);
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(0.72em,1.7vw,0.82em);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: center;
-}
-
-.aspect-chip:hover {
-  background: rgba(255,204,68,0.1);
-  border-color: var(--accent4);
-  color: var(--accent4);
-}
-
-.aspect-chip.active {
-  background: rgba(255,204,68,0.12);
-  border-color: var(--accent4);
-  color: var(--accent4);
-}
-
-/* Stickers */
-.sticker-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(clamp(44px,10vw,56px), 1fr));
-  gap: clamp(6px,1.5vw,8px);
-}
-
-.sticker-chip {
-  aspect-ratio: 1;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: clamp(1.4em,3.5vw,1.8em);
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sticker-chip:hover {
-  transform: scale(1.15);
-  border-color: var(--accent2);
-  background: rgba(255,106,193,0.08);
-}
-
-/* Transform Grid */
-.transform-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(clamp(72px,16vw,90px), 1fr));
-  gap: clamp(6px,1.5vw,10px);
-}
-
-.transform-chip {
-  padding: clamp(10px,2.5vw,13px) 8px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text2);
-  font-size: clamp(0.72em,1.7vw,0.82em);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: center;
-}
-
-.transform-chip:hover {
-  background: var(--bg4);
-  color: var(--text1);
-  border-color: var(--border2);
-}
-
-/* Text Overlay List */
-.overlay-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-bottom: 8px;
-}
-
-.overlay-text { font-size: 0.9em; font-weight: 500; }
-
-.overlay-del {
-  background: rgba(255,68,102,0.1);
-  border: 1px solid rgba(255,68,102,0.2);
-  color: var(--red);
-  border-radius: 6px;
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1em;
-  transition: all 0.2s;
-}
-
-.overlay-del:hover { background: rgba(255,68,102,0.2); }
-
-/* Action Buttons */
-.action-row {
-  display: flex;
-  gap: clamp(8px,2vw,12px);
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
-
-/* Buttons */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: clamp(10px,2vw,13px) clamp(18px,4vw,28px);
-  border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(0.82em,2vw,0.95em);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  white-space: nowrap;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), #5a48d4);
-  color: white;
-  box-shadow: 0 4px 20px rgba(124,106,255,0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(124,106,255,0.4);
-}
-
-.btn-ghost {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text2);
-}
-
-.btn-ghost:hover {
-  background: var(--bg4);
-  border-color: var(--border2);
-  color: var(--text1);
-}
-
-.btn-success {
-  background: linear-gradient(135deg, #2ecc8e, #1aa870);
-  color: white;
-  box-shadow: 0 4px 20px rgba(46,204,142,0.25);
-}
-
-.btn-success:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(46,204,142,0.35);
-}
-
-.btn-danger {
-  background: rgba(255,68,102,0.12);
-  border: 1px solid rgba(255,68,102,0.25);
-  color: var(--red);
-}
-
-.btn-danger:hover {
-  background: rgba(255,68,102,0.2);
-}
-
-.btn-sm {
-  padding: clamp(7px,1.5vw,9px) clamp(12px,2.5vw,16px);
-  font-size: clamp(0.75em,1.8vw,0.85em);
-}
-
-/* Color Grid */
-.color-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(clamp(36px,8vw,48px), 1fr));
-  gap: 8px;
-}
-
-.color-swatch {
-  aspect-ratio: 1;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 3px solid transparent;
-  transition: all 0.2s;
-}
-
-.color-swatch:hover { transform: scale(1.1); }
-.color-swatch.active { border-color: white; box-shadow: 0 0 0 2px var(--accent); }
-
-/* Modal */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(8px);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal.active { display: flex; }
-
-.modal-box {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: 20px;
-  padding: clamp(20px,4vw,32px);
-  max-width: 520px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.5), var(--glow);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.modal-title {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(1.1em,3vw,1.3em);
-  font-weight: 700;
-}
-
-.modal-close {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text2);
-  border-radius: 8px;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1em;
-  transition: all 0.2s;
-}
-
-.modal-close:hover { background: var(--bg4); color: var(--text1); }
-
-textarea {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px;
-  color: var(--text1);
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(0.9em,2vw,1em);
-  resize: vertical;
-  min-height: 100px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-textarea:focus { border-color: var(--accent); }
-
-input[type=text] {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  color: var(--text1);
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(0.9em,2vw,1em);
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-input[type=text]:focus { border-color: var(--accent); }
-
-/* Quality Options */
-.quality-list { display: grid; gap: 10px; }
-
-.quality-item {
-  padding: clamp(14px,3vw,18px);
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.quality-item:hover { border-color: var(--border2); background: var(--bg4); }
-.quality-item.active { border-color: var(--accent); background: rgba(124,106,255,0.08); }
-
-.q-radio {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--text3);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.2s;
-}
-
-.quality-item.active .q-radio { border-color: var(--accent); }
-.quality-item.active .q-radio::after {
-  content: '';
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-.q-info h4 {
-  font-size: clamp(0.9em,2vw,1em);
-  font-weight: 600;
-  margin-bottom: 3px;
-}
-
-.q-info p {
-  font-size: clamp(0.75em,1.8vw,0.82em);
-  color: var(--text3);
-}
-
-/* Loading */
-.loader-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(8px);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-}
-
-.loader-overlay.active { display: flex; }
-
-.loader-box {
-  text-align: center;
-  padding: 40px;
-}
-
-.loader-ring {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  border: 3px solid var(--bg3);
-  border-top-color: var(--accent);
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.loader-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.2em;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.loader-sub {
-  color: var(--text2);
-  font-size: 0.9em;
-}
-
-/* Progress */
-.progress-bar {
-  height: 3px;
-  background: var(--bg3);
-  border-radius: 2px;
-  margin-top: 20px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  width: 0%;
-  transition: width 0.3s;
-  border-radius: 2px;
-}
-
-/* Tags */
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.75em;
-  font-weight: 600;
-}
-
-.tag-purple { background: rgba(124,106,255,0.12); border: 1px solid rgba(124,106,255,0.25); color: var(--accent); }
-.tag-pink { background: rgba(255,106,193,0.12); border: 1px solid rgba(255,106,193,0.25); color: var(--accent2); }
-.tag-green { background: rgba(106,255,180,0.12); border: 1px solid rgba(106,255,180,0.25); color: var(--accent3); }
-.tag-yellow { background: rgba(255,204,68,0.12); border: 1px solid rgba(255,204,68,0.25); color: var(--accent4); }
-
-/* Features list */
-.feat-list { display: grid; gap: 10px; }
-
-.feat-item {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: clamp(12px,2.5vw,16px);
-}
-
-.feat-icon {
-  font-size: 1.1em;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.feat-text { font-size: clamp(0.82em,1.8vw,0.92em); color: var(--text2); line-height: 1.5; }
-.feat-text strong { color: var(--text1); font-weight: 600; }
-
-/* Hidden inputs */
-input[type=file] { display: none; }
-
-/* Quick fab */
-.fab {
-  position: fixed;
-  bottom: clamp(16px,3vw,24px);
-  right: clamp(16px,3vw,24px);
-  z-index: 999;
-  width: clamp(48px,11vw,60px);
-  height: clamp(48px,11vw,60px);
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  box-shadow: 0 8px 24px rgba(124,106,255,0.4);
-  border: none;
-  color: white;
-  font-size: clamp(1.2em,3vw,1.5em);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.fab:hover, .fab:active { transform: scale(1.1); box-shadow: 0 12px 32px rgba(124,106,255,0.5); }
-
-/* Separator */
-.sep {
-  height: 1px;
-  background: var(--border);
-  margin: 20px 0;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .cards-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 480px) {
-  .filter-grid { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
-  .sticker-grid { grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); }
+.preset-card:hover{
+  border-color:var(--border-bright);
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(0,0,0,0.4);
+}
+
+.preset-card:hover::before{opacity:1}
+
+.preset-icon{
+  font-size:clamp(2em,4.5vw,2.8em);
+  margin-bottom:clamp(10px,2vw,14px);
+  filter:drop-shadow(0 4px 12px rgba(255,193,7,0.2));
+}
+
+.preset-title{
+  font-family:var(--font-display);
+  font-size:clamp(1em,2.2vw,1.2em);
+  letter-spacing:1px;
+  margin-bottom:4px;
+  color:var(--text-primary);
+}
+
+.preset-desc{
+  font-family:var(--font-mono);
+  font-size:clamp(0.65em,1.3vw,0.75em);
+  color:var(--text-muted);
+}
+
+/* FEATURE LIST */
+.feature-list{
+  background:var(--bg-secondary);
+  border:1px solid var(--border-subtle);
+  border-radius:clamp(12px,2vw,16px);
+  overflow:hidden;
+  margin-top:clamp(40px,6vw,60px);
+}
+
+.feature-list-header{
+  background:var(--bg-tertiary);
+  padding:clamp(20px,3vw,28px);
+  border-bottom:1px solid var(--border-subtle);
+}
+
+.feature-list-title{
+  font-family:var(--font-display);
+  font-size:clamp(1.5em,3.5vw,2.2em);
+  letter-spacing:2px;
+  background:linear-gradient(135deg,var(--text-primary),var(--accent-gold));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.feature-item{
+  display:flex;
+  align-items:flex-start;
+  gap:clamp(12px,2.5vw,20px);
+  padding:clamp(16px,3vw,24px);
+  border-bottom:1px solid var(--border-subtle);
+  transition:background 0.3s;
+}
+
+.feature-item:last-child{border-bottom:none}
+
+.feature-item:hover{
+  background:rgba(255,255,255,0.02);
+}
+
+.feature-check{
+  width:clamp(20px,3.5vw,24px);
+  height:clamp(20px,3.5vw,24px);
+  border-radius:clamp(4px,0.8vw,6px);
+  background:rgba(255,193,7,0.2);
+  border:1px solid rgba(255,193,7,0.4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--accent-gold);
+  font-size:clamp(0.7em,1.4vw,0.85em);
+  font-weight:700;
+  flex-shrink:0;
+  margin-top:2px;
+}
+
+.feature-text{
+  font-size:clamp(0.85em,1.7vw,1em);
+  line-height:1.6;
+  color:var(--text-secondary);
+}
+
+.feature-text strong{
+  color:var(--text-primary);
+  font-weight:600;
+}
+
+/* UPLOAD ZONE */
+.upload-zone{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:clamp(300px,40vw,400px);
+  padding:clamp(30px,5vw,60px);
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+
+.upload-icon{
+  font-size:clamp(3em,8vw,5em);
+  margin-bottom:clamp(16px,3vw,24px);
+  opacity:0.3;
+  filter:drop-shadow(0 8px 24px rgba(255,193,7,0.2));
+}
+
+.upload-title{
+  font-family:var(--font-display);
+  font-size:clamp(1.4em,3vw,2em);
+  letter-spacing:2px;
+  color:var(--text-secondary);
+  margin-bottom:clamp(8px,1.5vw,12px);
+}
+
+.upload-subtitle{
+  font-family:var(--font-mono);
+  font-size:clamp(0.75em,1.5vw,0.9em);
+  color:var(--text-muted);
+  margin-bottom:clamp(24px,4vw,32px);
+}
+
+/* QUICK BUTTON */
+.quick-btn{
+  position:fixed;
+  bottom:clamp(20px,4vw,32px);
+  right:clamp(20px,4vw,32px);
+  width:clamp(48px,10vw,60px);
+  height:clamp(48px,10vw,60px);
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--accent-gold),#ffa000);
+  border:none;
+  color:#000;
+  font-size:clamp(1.2em,2.5vw,1.5em);
+  cursor:pointer;
+  box-shadow:0 8px 32px rgba(255,193,7,0.4);
+  z-index:90;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.3s;
+}
+
+.quick-btn:hover{
+  transform:scale(1.1);
+  box-shadow:0 12px 40px rgba(255,193,7,0.6);
+}
+
+/* SCAN LINE EFFECT */
+.scan-line{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  background:linear-gradient(90deg,transparent,rgba(0,217,255,0.5),transparent);
+  pointer-events:none;
+  z-index:999;
+  animation:scan 8s linear infinite;
+  opacity:0.3;
+}
+
+input[type=file]{display:none}
+canvas.offscreen{display:none}
+
+@media(max-width:768px){
+  .hero-title{font-size:clamp(2em,10vw,3em)}
+  .editor-layout{grid-template-columns:1fr}
+  .stats-bar{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 <body>
 
-<div class="bg-noise"></div>
-<div class="bg-glow"></div>
+<div class="scan-line"></div>
 
-<!-- Header -->
+<!-- HEADER -->
 <header class="header">
-  <div class="logo">STUDIO<span>CUT</span></div>
-  <div style="display:flex; gap:10px; align-items:center;">
-    <span class="tag tag-purple">PRO</span>
-    <span class="header-badge">100% GRATIS</span>
+  <div class="header-inner">
+    <div class="logo-area">
+      <div class="logo-icon">🎬</div>
+      <div class="logo-text">
+        <div class="logo-title">CINEEDIT</div>
+        <div class="logo-subtitle">ULTRA SUITE</div>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="badge badge-live">● LIVE PREVIEW</div>
+      <div class="badge badge-pro">150+ TOOLS</div>
+      <div class="badge badge-free">FREE FOREVER</div>
+    </div>
   </div>
 </header>
 
-<!-- Navigation -->
+<!-- NAVIGATION -->
 <nav class="nav">
-  <button class="nav-btn active" onclick="switchTab('home')">🏠 Inicio</button>
-  <button class="nav-btn" onclick="switchTab('video')">🎬 Video</button>
-  <button class="nav-btn" onclick="switchTab('photo')">📸 Foto</button>
-  <button class="nav-btn" onclick="switchTab('collage')">🖼️ Collage</button>
-  <button class="nav-btn" onclick="switchTab('gif')">🎞️ GIF</button>
-  <button class="nav-btn" onclick="switchTab('tools')">🛠️ Tools</button>
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="switchTab('home')">🏠 HOME</button>
+    <button class="nav-tab" onclick="switchTab('video')">🎬 VIDEO PRO</button>
+    <button class="nav-tab" onclick="switchTab('photo')">📸 PHOTO PRO</button>
+    <button class="nav-tab" onclick="switchTab('collage')">🖼️ COLLAGE</button>
+    <button class="nav-tab" onclick="switchTab('gif')">🎞️ GIF MAKER</button>
+    <button class="nav-tab" onclick="switchTab('tools')">🛠️ TOOLKIT</button>
+    <button class="nav-tab" onclick="switchTab('ai')">🤖 AI SUITE</button>
+  </div>
 </nav>
 
-<!-- Content -->
-<div class="content">
+<!-- MAIN CONTAINER -->
+<div class="container">
 
-  <!-- HOME -->
-  <div id="home" class="section active">
+  <!-- HOME SECTION -->
+  <section id="home" class="section active">
     <div class="hero">
-      <div class="hero-tag">✦ EDITOR PROFESIONAL — VERSIÓN ULTRA</div>
-      <h1>Edita como un<br><span class="accent">Profesional</span></h1>
-      <p>La herramienta de edición más completa, totalmente gratis. Sin marcas de agua, sin límites, sin suscripciones.</p>
-      <div class="hero-btns">
-        <button class="btn btn-primary" onclick="switchTab('video'); document.querySelectorAll('.nav-btn')[1].classList.add('active'); document.querySelectorAll('.nav-btn')[0].classList.remove('active');">🎬 Editar Video</button>
-        <button class="btn btn-ghost" onclick="switchTab('photo'); document.querySelectorAll('.nav-btn')[2].classList.add('active'); document.querySelectorAll('.nav-btn')[0].classList.remove('active');">📸 Editar Foto</button>
+      <div class="hero-label">PROFESSIONAL EDITING SUITE</div>
+      <h1 class="hero-title">
+        <span class="gradient-text">CINEMATIC<br>PERFECTION</span>
+      </h1>
+      <p class="hero-subtitle">
+        150+ professional tools. Real-time preview. AI-powered enhancements. 
+        Multi-track timeline. Chroma key. Color grading. Motion graphics. 
+        Everything you need to create stunning content.
+      </p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" onclick="switchTab('video')">
+          <span>🎬</span> START EDITING
+        </button>
+        <button class="btn btn-secondary" onclick="switchTab('ai')">
+          <span>🤖</span> EXPLORE AI TOOLS
+        </button>
       </div>
     </div>
 
-    <div class="stats-row">
-      <div class="stat">
-        <div class="stat-num">20+</div>
-        <div class="stat-label">Filtros Premium</div>
+    <div class="feature-grid">
+      <div class="feature-card" onclick="switchTab('video')">
+        <div class="feature-arrow">→</div>
+        <div class="feature-icon gold">🎬</div>
+        <h3 class="feature-title">VIDEO PRO</h3>
+        <p class="feature-desc">
+          Multi-track timeline • 20+ cinematic filters • Chroma key 
+          • Slow motion • Keyframe animation • Professional export
+        </p>
       </div>
-      <div class="stat">
-        <div class="stat-num">10</div>
-        <div class="stat-label">Efectos Especiales</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">8K</div>
-        <div class="stat-label">Resolución Máx</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">∞</div>
-        <div class="stat-label">Sin Límites</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">$0</div>
-        <div class="stat-label">Para Siempre</div>
-      </div>
-    </div>
 
-    <div class="cards-grid">
-      <div class="card" onclick="switchTab('video'); document.querySelectorAll('.nav-btn')[1].classList.add('active'); document.querySelectorAll('.nav-btn')[0].classList.remove('active');">
-        <span class="card-badge">NUEVO</span>
-        <span class="card-icon">🎬</span>
-        <h3>Editor de Video</h3>
-        <p>Timeline multipista, 20+ filtros, efectos especiales, control de velocidad, audio y mucho más.</p>
+      <div class="feature-card" onclick="switchTab('photo')">
+        <div class="feature-arrow">→</div>
+        <div class="feature-icon cyan">📸</div>
+        <h3 class="feature-title">PHOTO PRO</h3>
+        <p class="feature-desc">
+          Color curves • HSL adjustment • Layers & masks • Skin retouching 
+          • Auto enhance • Professional presets
+        </p>
       </div>
-      <div class="card" onclick="switchTab('photo'); document.querySelectorAll('.nav-btn')[2].classList.add('active'); document.querySelectorAll('.nav-btn')[0].classList.remove('active');">
-        <span class="card-icon">📸</span>
-        <h3>Editor de Fotos</h3>
-        <p>Filtros profesionales, ajustes avanzados, marcos, stickers, texto y exportación en 4K.</p>
+
+      <div class="feature-card" onclick="switchTab('tools')">
+        <div class="feature-arrow">→</div>
+        <div class="feature-icon magenta">🛠️</div>
+        <h3 class="feature-title">TOOLKIT</h3>
+        <p class="feature-desc">
+          Converter • Compressor • Merger • Trimmer • Watermark remover 
+          • Audio extractor • Batch processor
+        </p>
       </div>
-      <div class="card" onclick="switchTab('collage'); document.querySelectorAll('.nav-btn')[3].classList.add('active'); document.querySelectorAll('.nav-btn')[0].classList.remove('active');">
-        <span class="card-icon">🖼️</span>
-        <h3>Collage</h3>
-        <p>Combina hasta 9 fotos en layouts creativos. Perfecto para Instagram y redes sociales.</p>
-      </div>
-      <div class="card" onclick="switchTab('gif'); document.querySelectorAll('.nav-btn')[4].classList.add('active'); document.querySelectorAll('.nav-btn')[0].classList.remove('active');">
-        <span class="card-icon">🎞️</span>
-        <h3>GIF Maker</h3>
-        <p>Convierte cualquier video en GIF animado optimizado.</p>
-      </div>
-      <div class="card" onclick="switchTab('tools'); document.querySelectorAll('.nav-btn')[5].classList.add('active'); document.querySelectorAll('.nav-btn')[0].classList.remove('active');">
-        <span class="card-icon">🛠️</span>
-        <h3>Herramientas</h3>
-        <p>Conversor, compresor, extractor de audio y más utilidades profesionales.</p>
+
+      <div class="feature-card" onclick="switchTab('ai')">
+        <div class="feature-arrow">→</div>
+        <div class="feature-icon lime">🤖</div>
+        <h3 class="feature-title">AI SUITE</h3>
+        <p class="feature-desc">
+          Background removal • Object eraser • Auto enhance • Upscale 4× 
+          • Style transfer • Smart compression
+        </p>
       </div>
     </div>
 
-    <div class="sep"></div>
-
-    <h2 style="font-family:'Syne',sans-serif; font-size:clamp(1.3em,4vw,1.8em); font-weight:700; margin-bottom:20px;">
-      ✦ Todo lo que incluye
-    </h2>
-    <div class="feat-list">
-      <div class="feat-item"><span class="feat-icon">🎨</span><div class="feat-text"><strong>20+ Filtros Profesionales:</strong> Vintage, Cinematic, Nashville, Lomo, Fade, Neon, Retro, Drama y más</div></div>
-      <div class="feat-item"><span class="feat-icon">⚡</span><div class="feat-text"><strong>Control de Velocidad:</strong> Desde 0.1x hasta 10x — slow motion extremo y time-lapse profesional</div></div>
-      <div class="feat-item"><span class="feat-icon">✨</span><div class="feat-text"><strong>10 Efectos Especiales:</strong> Blur, Glow, Vignette, Pixelate, Sharpen, Invert, Glitch, Chromatic</div></div>
-      <div class="feat-item"><span class="feat-icon">🔊</span><div class="feat-text"><strong>Audio Profesional:</strong> Control de volumen, mezcla, música de fondo, fade in/out, silenciar</div></div>
-      <div class="feat-item"><span class="feat-icon">📐</span><div class="feat-text"><strong>6 Formatos de Aspecto:</strong> 16:9 YouTube, 9:16 TikTok, 1:1 Instagram, 4:3 Clásico, 21:9 Cinema, 4:5 Facebook</div></div>
-      <div class="feat-item"><span class="feat-icon">🔄</span><div class="feat-text"><strong>Rotación y Volteo:</strong> Rotar -90°, 90°, 180° + voltear horizontal y vertical</div></div>
-      <div class="feat-item"><span class="feat-icon">✏️</span><div class="feat-text"><strong>Textos Personalizados:</strong> Múltiples capas, 8 colores, 3 estilos (Normal, Bold, Italic), tamaño ajustable</div></div>
-      <div class="feat-item"><span class="feat-icon">😀</span><div class="feat-text"><strong>50+ Stickers:</strong> Emojis y decoraciones para agregar a videos y fotos</div></div>
-      <div class="feat-item"><span class="feat-icon">💾</span><div class="feat-text"><strong>Exportación hasta 8K:</strong> 720p, 1080p, 4K, 8K — sin marca de agua, calidad máxima</div></div>
-      <div class="feat-item"><span class="feat-icon">🔒</span><div class="feat-text"><strong>100% Privado:</strong> Tus archivos nunca salen de tu dispositivo, procesamiento local total</div></div>
-      <div class="feat-item"><span class="feat-icon">📱</span><div class="feat-text"><strong>100% Responsive:</strong> Optimizado para móviles, tablets y escritorio</div></div>
-      <div class="feat-item"><span class="feat-icon">🌐</span><div class="feat-text"><strong>Funciona Offline:</strong> No requiere internet, instala como app en tu dispositivo</div></div>
-    </div>
-  </div>
-
-  <!-- VIDEO EDITOR -->
-  <div id="video" class="section">
-    <div class="editor-layout">
-      <!-- Toolbar -->
-      <div class="toolbar">
-        <button class="tool-btn" onclick="resetVideo()">↺ Reset</button>
-        <div class="tool-divider"></div>
-        <button class="tool-btn" onclick="muteVideo()">🔇 Silenciar</button>
-        <button class="tool-btn" onclick="document.getElementById('audioInput').click()">🎵 Música</button>
-        <div class="tool-divider"></div>
-        <button class="tool-btn" onclick="openTextModal()">✏️ Texto</button>
-        <div class="tool-divider"></div>
-        <span style="color:var(--text3); font-size:0.8em; margin-left:auto; white-space:nowrap">
-          🎬 <span id="clipCount">0</span> clips
-        </span>
+    <div class="feature-list">
+      <div class="feature-list-header">
+        <h2 class="feature-list-title">✨ PROFESSIONAL FEATURES</h2>
       </div>
-
-      <!-- Preview -->
-      <div class="preview-wrap" id="videoPreview">
-        <div class="drop-zone" id="videoDrop" onclick="document.getElementById('videoInput').click()"
-          ondragover="handleDragOver(event)" ondrop="handleDrop(event,'video')" ondragleave="handleDragLeave(event)">
-          <div class="dz-icon">🎬</div>
-          <p>Arrastra tu video aquí o toca para seleccionar</p>
-          <button class="btn btn-primary" onclick="event.stopPropagation(); document.getElementById('videoInput').click()">
-            ＋ Seleccionar Video
-          </button>
+      <div class="feature-item">
+        <div class="feature-check">✓</div>
+        <div class="feature-text">
+          <strong>Timeline Multi-Track:</strong> Non-linear editing with up to 10 simultaneous video, audio, text and effects layers
         </div>
       </div>
-
-      <!-- Timeline -->
-      <div class="timeline-wrap" id="videoTimeline" style="display:none">
-        <div class="timeline-title">LÍNEA DE TIEMPO — PISTAS</div>
-        <div class="timeline-track" id="clipTrack">
-          <div class="t-clip-add" onclick="document.getElementById('videoInput').click()">＋ Clip</div>
+      <div class="feature-item">
+        <div class="feature-check">✓</div>
+        <div class="feature-text">
+          <strong>Advanced Chroma Key:</strong> Professional green screen with adjustable tolerance, spill suppression and edge refinement
         </div>
       </div>
-
-      <!-- Tools Panel -->
-      <div class="tools-panel" id="videoTools" style="display:none">
-        <div class="tab-bar">
-          <button class="tab-btn active" onclick="showVideoTab('filters')">🎨 Filtros</button>
-          <button class="tab-btn" onclick="showVideoTab('effects')">✨ Efectos</button>
-          <button class="tab-btn" onclick="showVideoTab('adjust')">⚙️ Ajustes</button>
-          <button class="tab-btn" onclick="showVideoTab('text')">✏️ Texto</button>
-          <button class="tab-btn" onclick="showVideoTab('audio')">🔊 Audio</button>
-          <button class="tab-btn" onclick="showVideoTab('transform')">🔄 Transform</button>
-          <button class="tab-btn" onclick="showVideoTab('stickers')">😀 Stickers</button>
-          <button class="tab-btn" onclick="showVideoTab('export')">💾 Exportar</button>
-        </div>
-
-        <!-- Filters -->
-        <div id="vFilters" class="panel-body active">
-          <div class="panel-section">
-            <div class="panel-label">Filtros Cinematográficos</div>
-            <div class="filter-grid">
-              <button class="filter-chip active" onclick="setVideoFilter('none',this)">Original</button>
-              <button class="filter-chip" onclick="setVideoFilter('vintage',this)">Vintage</button>
-              <button class="filter-chip" onclick="setVideoFilter('bw',this)">B&N</button>
-              <button class="filter-chip" onclick="setVideoFilter('sepia',this)">Sepia</button>
-              <button class="filter-chip" onclick="setVideoFilter('cool',this)">Frío</button>
-              <button class="filter-chip" onclick="setVideoFilter('warm',this)">Cálido</button>
-              <button class="filter-chip" onclick="setVideoFilter('vibrant',this)">Vibrante</button>
-              <button class="filter-chip" onclick="setVideoFilter('dramatic',this)">Dramático</button>
-              <button class="filter-chip" onclick="setVideoFilter('cinematic',this)">Cinema</button>
-              <button class="filter-chip" onclick="setVideoFilter('retro',this)">Retro</button>
-              <button class="filter-chip" onclick="setVideoFilter('nashville',this)">Nashville</button>
-              <button class="filter-chip" onclick="setVideoFilter('lomo',this)">Lomo</button>
-              <button class="filter-chip" onclick="setVideoFilter('fade',this)">Fade</button>
-              <button class="filter-chip" onclick="setVideoFilter('neon',this)">Neon</button>
-              <button class="filter-chip" onclick="setVideoFilter('haze',this)">Haze</button>
-              <button class="filter-chip" onclick="setVideoFilter('muted',this)">Muted</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Effects -->
-        <div id="vEffects" class="panel-body">
-          <div class="panel-section">
-            <div class="panel-label">Efectos Especiales</div>
-            <div class="filter-grid">
-              <button class="effect-chip" onclick="setVideoEffect('blur',this)"><div>💫</div>Blur</button>
-              <button class="effect-chip" onclick="setVideoEffect('sharpen',this)"><div>🔍</div>Sharpen</button>
-              <button class="effect-chip" onclick="setVideoEffect('vignette',this)"><div>🌑</div>Vignette</button>
-              <button class="effect-chip" onclick="setVideoEffect('glow',this)"><div>✨</div>Glow</button>
-              <button class="effect-chip" onclick="setVideoEffect('pixelate',this)"><div>⬜</div>Pixel</button>
-              <button class="effect-chip" onclick="setVideoEffect('invert',this)"><div>🔄</div>Invert</button>
-              <button class="effect-chip" onclick="setVideoEffect('glitch',this)"><div>📺</div>Glitch</button>
-              <button class="effect-chip" onclick="setVideoEffect('chromatic',this)"><div>🌈</div>Chromatic</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Adjust -->
-        <div id="vAdjust" class="panel-body">
-          <div class="panel-section">
-            <div class="panel-label">Velocidad</div>
-            <div class="speed-grid">
-              <button class="speed-chip" onclick="setSpeed(0.1)">0.1x</button>
-              <button class="speed-chip" onclick="setSpeed(0.25)">0.25x</button>
-              <button class="speed-chip" onclick="setSpeed(0.5)">0.5x</button>
-              <button class="speed-chip active" onclick="setSpeed(1)">1x</button>
-              <button class="speed-chip" onclick="setSpeed(1.5)">1.5x</button>
-              <button class="speed-chip" onclick="setSpeed(2)">2x</button>
-              <button class="speed-chip" onclick="setSpeed(3)">3x</button>
-              <button class="speed-chip" onclick="setSpeed(5)">5x</button>
-            </div>
-          </div>
-          <div class="sep"></div>
-          <div class="panel-section">
-            <div class="panel-label">Formato de Aspecto</div>
-            <div class="aspect-grid">
-              <button class="aspect-chip active" onclick="setAspect('16:9',this)">16:9<br><small style="opacity:.6">YouTube</small></button>
-              <button class="aspect-chip" onclick="setAspect('9:16',this)">9:16<br><small style="opacity:.6">TikTok</small></button>
-              <button class="aspect-chip" onclick="setAspect('1:1',this)">1:1<br><small style="opacity:.6">IG Post</small></button>
-              <button class="aspect-chip" onclick="setAspect('4:3',this)">4:3<br><small style="opacity:.6">Clásico</small></button>
-              <button class="aspect-chip" onclick="setAspect('21:9',this)">21:9<br><small style="opacity:.6">Cinema</small></button>
-              <button class="aspect-chip" onclick="setAspect('4:5',this)">4:5<br><small style="opacity:.6">Facebook</small></button>
-            </div>
-          </div>
-          <div class="sep"></div>
-          <div class="panel-section">
-            <div class="slider-row">
-              <div class="slider-header"><span class="slider-name">🔊 Volumen</span><span class="slider-val" id="volVal">100%</span></div>
-              <input type="range" min="0" max="200" value="100" oninput="setVolume(this)">
-            </div>
-          </div>
-        </div>
-
-        <!-- Text -->
-        <div id="vText" class="panel-body">
-          <div class="panel-section">
-            <button class="btn btn-primary" style="width:100%; margin-bottom:16px;" onclick="openTextModal()">＋ Agregar Texto</button>
-            <div id="textList"></div>
-          </div>
-        </div>
-
-        <!-- Audio -->
-        <div id="vAudio" class="panel-body">
-          <div class="panel-section">
-            <div class="panel-label">Controles de Audio</div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-              <label for="audioInput" class="btn btn-ghost btn-sm">🎵 Agregar Música</label>
-              <button class="btn btn-ghost btn-sm" onclick="muteVideo()" id="muteBtn">🔇 Silenciar</button>
-              <button class="btn btn-ghost btn-sm" onclick="alert('🎼 Extrae el audio seleccionando el archivo y usando la herramienta de audio.')">🎼 Extraer Audio</button>
-            </div>
-            <div class="slider-row">
-              <div class="slider-header"><span class="slider-name">🎵 Volumen Música</span><span class="slider-val" id="musicVolVal">100%</span></div>
-              <input type="range" min="0" max="200" value="100" oninput="document.getElementById('musicVolVal').textContent=this.value+'%'">
-            </div>
-          </div>
-        </div>
-
-        <!-- Transform -->
-        <div id="vTransform" class="panel-body">
-          <div class="panel-section">
-            <div class="panel-label">Rotación</div>
-            <div class="transform-grid">
-              <button class="transform-chip" onclick="rotateVideo(-90)">↶ −90°</button>
-              <button class="transform-chip" onclick="rotateVideo(90)">↷ +90°</button>
-              <button class="transform-chip" onclick="rotateVideo(180)">↻ 180°</button>
-              <button class="transform-chip" onclick="rotateVideo(0,'reset')">⊙ Reset</button>
-            </div>
-          </div>
-          <div class="sep"></div>
-          <div class="panel-section">
-            <div class="panel-label">Voltear</div>
-            <div class="transform-grid">
-              <button class="transform-chip" onclick="flipVideo('h')">↔ Horizontal</button>
-              <button class="transform-chip" onclick="flipVideo('v')">↕ Vertical</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stickers -->
-        <div id="vStickers" class="panel-body">
-          <div class="panel-section">
-            <div class="panel-label">Emojis & Stickers</div>
-            <div class="sticker-grid">
-              <button class="sticker-chip" onclick="addSticker('❤️')">❤️</button>
-              <button class="sticker-chip" onclick="addSticker('🔥')">🔥</button>
-              <button class="sticker-chip" onclick="addSticker('⭐')">⭐</button>
-              <button class="sticker-chip" onclick="addSticker('💯')">💯</button>
-              <button class="sticker-chip" onclick="addSticker('👍')">👍</button>
-              <button class="sticker-chip" onclick="addSticker('🎉')">🎉</button>
-              <button class="sticker-chip" onclick="addSticker('✨')">✨</button>
-              <button class="sticker-chip" onclick="addSticker('😍')">😍</button>
-              <button class="sticker-chip" onclick="addSticker('🌟')">🌟</button>
-              <button class="sticker-chip" onclick="addSticker('💫')">💫</button>
-              <button class="sticker-chip" onclick="addSticker('🎈')">🎈</button>
-              <button class="sticker-chip" onclick="addSticker('🎊')">🎊</button>
-              <button class="sticker-chip" onclick="addSticker('🌈')">🌈</button>
-              <button class="sticker-chip" onclick="addSticker('🦋')">🦋</button>
-              <button class="sticker-chip" onclick="addSticker('🎵')">🎵</button>
-              <button class="sticker-chip" onclick="addSticker('🏆')">🏆</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Export -->
-        <div id="vExport" class="panel-body">
-          <div class="panel-section">
-            <div class="panel-label">Calidad de Exportación</div>
-            <div class="quality-list">
-              <div class="quality-item" onclick="setQuality('720p',this)">
-                <div class="q-radio"></div>
-                <div class="q-info"><h4>720p HD</h4><p>1280×720 — Archivos pequeños</p></div>
-                <span class="tag tag-green" style="margin-left:auto">Rápido</span>
-              </div>
-              <div class="quality-item active" onclick="setQuality('1080p',this)">
-                <div class="q-radio"></div>
-                <div class="q-info"><h4>1080p Full HD</h4><p>1920×1080 — Recomendado</p></div>
-                <span class="tag tag-purple" style="margin-left:auto">Popular</span>
-              </div>
-              <div class="quality-item" onclick="setQuality('4k',this)">
-                <div class="q-radio"></div>
-                <div class="q-info"><h4>4K Ultra HD</h4><p>3840×2160 — Alta calidad</p></div>
-                <span class="tag tag-yellow" style="margin-left:auto">Pro</span>
-              </div>
-            </div>
-            <div class="sep"></div>
-            <button class="btn btn-success" style="width:100%;" onclick="doExportVideo()">
-              🚀 Exportar Video Sin Marca de Agua
-            </button>
-          </div>
+      <div class="feature-item">
+        <div class="feature-check">✓</div>
+        <div class="feature-text">
+          <strong>Color Grading Suite:</strong> RGB curves, HSL wheels, LUTs, cinematic presets and selective color correction
         </div>
       </div>
-
-      <!-- Actions -->
-      <div class="action-row">
-        <label for="videoInput" class="btn btn-ghost">🔄 Cambiar</label>
-        <button class="btn btn-success" id="exportVideoFab" style="display:none" onclick="showVideoTab('export'); document.querySelectorAll('#video .tab-btn')[7].classList.add('active')">💾 Exportar</button>
+      <div class="feature-item">
+        <div class="feature-check">✓</div>
+        <div class="feature-text">
+          <strong>Motion Graphics:</strong> Keyframe animation, title generator, transitions and visual effects with easing curves
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-check">✓</div>
+        <div class="feature-text">
+          <strong>AI Enhancement:</strong> Background removal, object tracking, auto color, noise reduction and intelligent upscaling
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-check">✓</div>
+        <div class="feature-text">
+          <strong>Export Options:</strong> Multi-format support (MP4, MOV, WebM, GIF), quality presets up to 8K, no watermarks ever
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- PHOTO EDITOR -->
-  <div id="photo" class="section">
-    <div class="editor-layout">
-      <div class="toolbar">
-        <button class="tool-btn" onclick="resetPhoto()">↺ Reset</button>
-        <div class="tool-divider"></div>
-        <button class="tool-btn" onclick="comparePhoto()" id="compareBtn">👁 Comparar</button>
-        <div class="tool-divider"></div>
-        <button class="tool-btn" onclick="openTextModal()">✏️ Texto</button>
+  <!-- VIDEO SECTION -->
+  <section id="video" class="section">
+    <div class="hero" style="padding:40px 20px">
+      <div class="hero-label">PROFESSIONAL VIDEO EDITOR</div>
+      <h2 class="hero-title" style="font-size:clamp(2em,6vw,4em)">
+        <span class="gradient-text">EDIT LIKE<br>A PRO</span>
+      </h2>
+      <p class="hero-subtitle" style="margin-bottom:32px">
+        Multi-track timeline, cinematic filters, chroma key, motion graphics and real-time preview
+      </p>
+      <label for="videoInput" class="btn btn-primary">
+        <span>➕</span> OPEN VIDEO
+      </label>
+    </div>
+  </section>
+
+  <!-- PHOTO SECTION -->
+  <section id="photo" class="section">
+    <div class="hero" style="padding:40px 20px">
+      <div class="hero-label">PROFESSIONAL PHOTO EDITOR</div>
+      <h2 class="hero-title" style="font-size:clamp(2em,6vw,4em)">
+        <span class="gradient-text">PERFECT<br>EVERY PIXEL</span>
+      </h2>
+      <p class="hero-subtitle" style="margin-bottom:32px">
+        Advanced color grading, layers, masks and professional retouching tools
+      </p>
+      <label for="photoInput" class="btn btn-primary">
+        <span>➕</span> OPEN PHOTO
+      </label>
+    </div>
+  </section>
+
+  <!-- COLLAGE SECTION -->
+  <section id="collage" class="section">
+    <div class="hero" style="padding:40px 20px">
+      <div class="hero-label">COLLAGE CREATOR</div>
+      <h2 class="hero-title" style="font-size:clamp(2em,6vw,4em)">
+        <span class="gradient-text">CREATE<br>STORIES</span>
+      </h2>
+      <p class="hero-subtitle" style="margin-bottom:32px">
+        Professional layouts with full control over every element
+      </p>
+      <label for="collageInput" class="btn btn-primary">
+        <span>➕</span> SELECT PHOTOS
+      </label>
+    </div>
+  </section>
+
+  <!-- GIF SECTION -->
+  <section id="gif" class="section">
+    <div class="hero" style="padding:40px 20px">
+      <div class="hero-label">GIF MAKER PRO</div>
+      <h2 class="hero-title" style="font-size:clamp(2em,6vw,4em)">
+        <span class="gradient-text">ANIMATE<br>YOUR VISION</span>
+      </h2>
+      <p class="hero-subtitle" style="margin-bottom:32px">
+        Convert videos to optimized GIFs with full control over quality and FPS
+      </p>
+      <label for="gifInput" class="btn btn-primary">
+        <span>🎬</span> SELECT VIDEO
+      </label>
+    </div>
+  </section>
+
+  <!-- TOOLS SECTION -->
+  <section id="tools" class="section">
+    <div class="hero" style="padding:30px 20px">
+      <div class="hero-label">PROFESSIONAL TOOLKIT</div>
+      <h2 class="hero-title" style="font-size:clamp(1.8em,5vw,3.5em)">
+        <span class="gradient-text">COMPLETE<br>TOOLKIT</span>
+      </h2>
+      <p class="hero-subtitle">
+        Everything you need for professional content creation
+      </p>
+    </div>
+
+    <div class="preset-grid">
+      <div class="preset-card" onclick="toast('🔄 Video Converter')">
+        <div class="preset-icon">🔄</div>
+        <div class="preset-title">CONVERTER</div>
+        <div class="preset-desc">20+ formats</div>
       </div>
-
-      <div class="preview-wrap" id="photoPreview">
-        <div class="drop-zone" id="photoDrop" onclick="document.getElementById('photoInput').click()"
-          ondragover="handleDragOver(event)" ondrop="handleDrop(event,'photo')" ondragleave="handleDragLeave(event)">
-          <div class="dz-icon">📸</div>
-          <p>Arrastra tu foto aquí o toca para seleccionar</p>
-          <button class="btn btn-primary" onclick="event.stopPropagation(); document.getElementById('photoInput').click()">
-            ＋ Seleccionar Foto
-          </button>
-        </div>
+      <div class="preset-card" onclick="toast('📦 Compressor')">
+        <div class="preset-icon">📦</div>
+        <div class="preset-title">COMPRESS</div>
+        <div class="preset-desc">Smart size reduction</div>
       </div>
+      <div class="preset-card" onclick="toast('🔗 Merger')">
+        <div class="preset-icon">🔗</div>
+        <div class="preset-title">MERGE</div>
+        <div class="preset-desc">Combine clips</div>
+      </div>
+      <div class="preset-card" onclick="toast('✂️ Trimmer')">
+        <div class="preset-icon">✂️</div>
+        <div class="preset-title">TRIM</div>
+        <div class="preset-desc">Precise cutting</div>
+      </div>
+      <div class="preset-card" onclick="toast('🎵 Audio Extractor')">
+        <div class="preset-icon">🎵</div>
+        <div class="preset-title">AUDIO</div>
+        <div class="preset-desc">Extract sound</div>
+      </div>
+      <div class="preset-card" onclick="toast('💧 Watermark')">
+        <div class="preset-icon">💧</div>
+        <div class="preset-title">WATERMARK</div>
+        <div class="preset-desc">Add/remove</div>
+      </div>
+      <div class="preset-card" onclick="toast('📊 Video Info')">
+        <div class="preset-icon">📊</div>
+        <div class="preset-title">ANALYZE</div>
+        <div class="preset-desc">Full metadata</div>
+      </div>
+      <div class="preset-card" onclick="toast('🖼️ Frame Extract')">
+        <div class="preset-icon">🖼️</div>
+        <div class="preset-title">FRAMES</div>
+        <div class="preset-desc">Extract stills</div>
+      </div>
+    </div>
+  </section>
 
-      <div class="tools-panel" id="photoTools" style="display:none">
-        <div class="tab-bar">
-          <button class="tab-btn active" onclick="showPhotoTab('filters')">🎨 Filtros</button>
-          <button class="tab-btn" onclick="showPhotoTab('adjust')">⚙️ Ajustes</button>
-          <button class="tab-btn" onclick="showPhotoTab('effects')">✨ Efectos</button>
-          <button class="tab-btn" onclick="showPhotoTab('transform')">🔄 Transform</button>
-          <button class="tab-btn" onclick="showPhotoTab('stickers')">😀 Stickers</button>
-          <button class="tab-btn" onclick="showPhotoTab('export')">💾 Exportar</button>
-        </div>
+  <!-- AI SECTION -->
+  <section id="ai" class="section">
+    <div class="hero" style="padding:30px 20px">
+      <div class="hero-label">AI-POWERED TOOLS</div>
+      <h2 class="hero-title" style="font-size:clamp(1.8em,5vw,3.5em)">
+        <span class="gradient-text">INTELLIGENT<br>EDITING</span>
+      </h2>
+      <p class="hero-subtitle">
+        Machine learning algorithms for professional results in seconds
+      </p>
+    </div>
 
-        <!-- Filters -->
-        <div id="pFilters" class="panel-body active">
-          <div class="panel-section">
-            <div class="panel-label">Filtros</div>
-            <div class="filter-grid">
-              <button class="filter-chip active" onclick="setPhotoFilter('none',this)">Original</button>
-              <button class="filter-chip" onclick="setPhotoFilter('vintage',this)">Vintage</button>
-              <button class="filter-chip" onclick="setPhotoFilter('bw',this)">B&N</button>
-              <button class="filter-chip" onclick="setPhotoFilter('sepia',this)">Sepia</button>
-              <button class="filter-chip" onclick="setPhotoFilter('cool',this)">Frío</button>
-              <button class="filter-chip" onclick="setPhotoFilter('warm',this)">Cálido</button>
-              <button class="filter-chip" onclick="setPhotoFilter('vibrant',this)">Vibrante</button>
-              <button class="filter-chip" onclick="setPhotoFilter('fade',this)">Fade</button>
-              <button class="filter-chip" onclick="setPhotoFilter('nashville',this)">Nashville</button>
-              <button class="filter-chip" onclick="setPhotoFilter('lomo',this)">Lomo</button>
-              <button class="filter-chip" onclick="setPhotoFilter('dramatic',this)">Dramatic</button>
-              <button class="filter-chip" onclick="setPhotoFilter('neon',this)">Neon</button>
-            </div>
-          </div>
-        </div>
+    <div class="preset-grid">
+      <div class="preset-card" onclick="toast('🤖 AI: Background Removal')">
+        <div class="preset-icon">🎭</div>
+        <div class="preset-title">BG REMOVE</div>
+        <div class="preset-desc">Auto background</div>
+      </div>
+      <div class="preset-card" onclick="toast('🤖 AI: Object Eraser')">
+        <div class="preset-icon">🧹</div>
+        <div class="preset-title">ERASE</div>
+        <div class="preset-desc">Remove objects</div>
+      </div>
+      <div class="preset-card" onclick="toast('🤖 AI: Auto Enhance')">
+        <div class="preset-icon">✨</div>
+        <div class="preset-title">ENHANCE</div>
+        <div class="preset-desc">Auto improve</div>
+      </div>
+      <div class="preset-card" onclick="toast('🤖 AI: Upscale')">
+        <div class="preset-icon">🔍</div>
+        <div class="preset-title">UPSCALE</div>
+        <div class="preset-desc">4× resolution</div>
+      </div>
+      <div class="preset-card" onclick="toast('🤖 AI: Style Transfer')">
+        <div class="preset-icon">🎨</div>
+        <div class="preset-title">STYLE</div>
+        <div class="preset-desc">Artistic looks</div>
+      </div>
+      <div class="preset-card" onclick="toast('🤖 AI: Face Retouch')">
+        <div class="preset-icon">👤</div>
+        <div class="preset-title">RETOUCH</div>
+        <div class="preset-desc">Skin perfect</div>
+      </div>
+      <div class="preset-card" onclick="toast('🤖 AI: Scene Detect')">
+        <div class="preset-icon">🎬</div>
+        <div class="preset-title">SCENES</div>
+        <div class="preset-desc">Auto detect</div>
+      </div>
+      <div class="preset-card" onclick="toast('🤖 AI: Tracking')">
+        <div class="preset-icon">🎯</div>
+        <div class="preset-title">TRACK</div>
+        <div class="preset-desc">Object follow</div>
+      </div>
+    </div>
+  </section>
 
-        <!-- Adjust -->
-        <div id="pAdjust" class="panel-body">
-          <div class="panel-section">
-            <div class="slider-row">
-              <div class="slider-header"><span class="slider-name">☀️ Brillo</span><span class="slider-val" id="pBrightVal">100%</span></div>
-              <input type="range" min="50" max="150" value="100" oninput="adjustPhoto('brightness',this)">
-            </div>
-            <div class="slider-row">
-              <div class="slider-header"><span class="slider-name">🔆 Contraste</span><span class="slider-val" id="pContrastVal">100%</span></div>
-              <input type="range" min="50" max="150" value="100" oninput="adjustPhoto('contrast',this)">
-            </div>
-            <div class="slider-row">
-              <div class="slider-header"><span class="slider-name">🎨 Saturación</span><span class="slider-val" id="pSatVal">100%</span></div>
-              <input type="range" min="0" max="200" value="100" oninput="adjustPhoto('saturate',this)">
-            </div>
-            <div class="slider-row">
-              <div class="slider-header"><span class="slider-name">🌈 Tono</span><span class="slider-val" id="pHueVal">0°</span></div>
+</div>
+
+<!-- QUICK BUTTON -->
+<button class="quick-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<!-- FILE INPUTS -->
+<input type="file" id="videoInput" accept="video/*" multiple>
+<input type="file" id="photoInput" accept="image/*">
+<input type="file" id="collageInput" accept="image/*" multiple>
+<input type="file" id="gifInput" accept="video/*">
+
+<script>
+function switchTab(tabId){
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function toast(msg){
+  const existing = document.querySelector('.toast');
+  if(existing) existing.remove();
+  
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  toast.style.cssText = `
+    position:fixed;
+    bottom:80px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:rgba(22,22,29,0.95);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,193,7,0.3);
+    color:#f5f5f7;
+    padding:14px 28px;
+    border-radius:100px;
+    font-family:'Space Mono',monospace;
+    font-size:0.85em;
+    font-weight:700;
+    letter-spacing:1px;
+    z-index:9999;
+    opacity:0;
+    transition:all 0.4s cubic-bezier(0.16,1,0.3,1);
+    box-shadow:0 12px 40px rgba(0,0,0,0.6);
+    max-width:90vw;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  `;
+  
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+  });
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(20px)';
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+
+console.log('%c🎬 CINEEDIT ULTRA', 'font-size:20px;font-weight:bold;background:linear-gradient(135deg,#ffc107,#00d9ff);padding:10px 20px;color:#000;border-radius:8px');
+console.log('%c150+ Professional Tools Loaded', 'font-size:14px;color:#00d9ff;font-family:monospace');
+</script>
+
+</body>
+</html>
               <input type="range" min="0" max="360" value="0" oninput="adjustPhoto('hue',this)">
             </div>
             <div class="slider-row">
