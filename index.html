@@ -3,344 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CineEdit TITAN v6 - Color & Master Suite</title>
+    <title>CineEdit TITAN REBORN</title>
     <style>
-        :root {
-            --accent: #00f2ff;
-            --magenta: #ff00ff;
-            --bg: #050508;
-            --panel: #11111a;
-            --text: #e0e0e5;
-            --border: rgba(0, 242, 255, 0.2);
-        }
+        :root { --accent: #00f2ff; --bg: #0a0a0c; --card: #16161e; --text: #eee; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
-
-        /* --- VISOR --- */
-        .viewport {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            aspect-ratio: 16/9;
+        /* Pantalla de Video */
+        .preview-area {
+            flex: 0 0 40%;
             background: #000;
-            margin: 10px auto;
-            border: 2px solid var(--border);
-            overflow: hidden;
-            flex-shrink: 0;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-bottom: 2px solid #222;
         }
+        video { max-width: 100%; max-height: 100%; }
 
-        video { max-width: 100%; max-height: 100%; pointer-events: none; }
-
-        #stickerLayer {
+        /* Capa de Arrastre */
+        #dragLayer {
             position: absolute;
-            top: 10%; left: 10%;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
             cursor: move;
-            z-index: 100;
             touch-action: none;
             display: none;
+            border: 1px dashed var(--accent);
         }
 
-        /* --- CONTROLES CON SCROLL --- */
-        .controls-container {
+        /* Panel de Controles */
+        .controls-area {
             flex: 1;
             overflow-y: auto;
             padding: 15px;
-            max-width: 1000px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .editor-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
-            padding-bottom: 40px;
         }
 
-        .card {
-            background: var(--panel);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
+        .card { background: var(--card); padding: 12px; border-radius: 8px; border: 1px solid #333; }
+        h3 { font-size: 0.7rem; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; }
 
-        .label { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; font-weight: 800; letter-spacing: 1px; }
-
-        .btn-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
         .btn {
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            border: 1px solid #333;
-            padding: 10px 5px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: 0.2s;
+            background: #252530; color: #fff; border: none; padding: 8px;
+            border-radius: 4px; font-size: 0.7rem; cursor: pointer;
         }
-
-        .btn:hover { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
-        .btn.active { background: var(--accent); color: #000; font-weight: bold; }
-
-        /* SLIDERS */
-        .slider-wrap { margin-bottom: 15px; }
-        input[type=range] { width: 100%; accent-color: var(--accent); margin-top: 5px; }
-
-        /* TIMELINE */
-        .timeline-box { grid-column: 1 / -1; }
-        .track {
-            height: 50px;
-            background: #000;
-            border-radius: 8px;
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-        .waveform-canvas { width: 100%; height: 100%; opacity: 0.5; }
-        .playhead {
-            position: absolute;
-            top: 0; left: 0;
-            width: 2px; height: 100%;
-            background: var(--magenta);
-            box-shadow: 0 0 10px var(--magenta);
-            z-index: 10;
-        }
+        .btn:active { background: var(--accent); color: #000; }
+        
+        input[type=range] { width: 100%; accent-color: var(--accent); margin: 8px 0; }
 
         .export-btn {
             grid-column: 1 / -1;
-            padding: 20px;
-            background: linear-gradient(90deg, var(--accent), var(--magenta));
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-weight: 900;
-            text-transform: uppercase;
-            cursor: pointer;
+            background: linear-gradient(to right, #00f2ff, #0077ff);
+            color: #000; font-weight: bold; padding: 15px; border: none; border-radius: 8px;
+            cursor: pointer; margin-bottom: 20px;
+        }
+
+        #fileOverlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.8);
+            display: flex; align-items: center; justify-content: center; z-index: 100;
         }
     </style>
 </head>
 <body>
 
-<div class="viewport" id="container">
-    <video id="vPlayer" playsinline></video>
-    <div id="stickerLayer">
-        <div id="stickerContent"></div>
+<div class="preview-area" id="dropZone">
+    <div id="fileOverlay">
+        <button class="export-btn" onclick="document.getElementById('vFile').click()">SELECCIONAR VIDEO</button>
     </div>
-    <div id="loader" style="position: absolute; z-index: 20;">
-        <button class="btn" style="padding:15px 40px; font-weight:900; letter-spacing:1px;" onclick="document.getElementById('fileIn').click()">ABRIR VIDEO TITAN</button>
-    </div>
-</div>
-
-<div class="controls-container">
-    <div class="editor-grid">
-        
-        <div class="card">
-            <div class="label">Corrección de Color</div>
-            <div class="slider-wrap">
-                <span style="font-size:0.6rem">Brillo: <span id="briVal">100</span>%</span>
-                <input type="range" min="0" max="200" value="100" oninput="updateColor('bri', this.value)">
-            </div>
-            <div class="slider-wrap">
-                <span style="font-size:0.6rem">Contraste: <span id="conVal">100</span>%</span>
-                <input type="range" min="0" max="200" value="100" oninput="updateColor('con', this.value)">
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="label">Velocidad (Time)</div>
-            <div class="btn-group">
-                <button class="btn" onclick="setSpeed(0.5, this)">0.5x</button>
-                <button class="btn active" onclick="setSpeed(1.0, this)">1.0x</button>
-                <button class="btn" onclick="setSpeed(2.0, this)">2.0x</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="label">Estilos</div>
-            <div class="btn-group">
-                <button class="btn active" onclick="setF('none', this)">Orig.</button>
-                <button class="btn" onclick="setF('grayscale(1)', this)">Noir</button>
-                <button class="btn" onclick="setF('sepia(1)', this)">Retro</button>
-                <button class="btn" onclick="setF('saturate(3)', this)">Vivid</button>
-                <button class="btn" onclick="setF('invert(1)', this)">Invert</button>
-                <button class="btn" onclick="resetAll()">Reset</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="label">PiP & Capas</div>
-            <div class="btn-group" style="margin-bottom:10px">
-                <button class="btn" onclick="document.getElementById('imgIn').click()">🖼️ Logo</button>
-                <button class="btn" onclick="setEmoji('🔥')">🔥</button>
-                <button class="btn" onclick="setEmoji('🎬')">🎬</button>
-            </div>
-            <span style="font-size:0.6rem">Tamaño: <span id="szVal">100</span>px</span>
-            <input type="range" min="30" max="400" value="100" oninput="updateScale(this.value)">
-        </div>
-
-        <div class="card timeline-box">
-            <div class="track" id="track" onclick="seek(event)">
-                <div class="playhead" id="playhead"></div>
-                <canvas id="waveCanvas" class="waveform-canvas"></canvas>
-            </div>
-            <div style="display:flex; justify-content: space-between; gap:10px">
-                <button class="btn" style="flex:1" onclick="v.currentTime -= 0.1">◀</button>
-                <button class="btn" style="flex:3; font-weight:bold" onclick="toggleP()" id="pBtn">PLAY / PAUSA</button>
-                <button class="btn" style="flex:1" onclick="v.currentTime += 0.1">▶</button>
-            </div>
-        </div>
-
-        <button class="export-btn" id="exportBtn" onclick="exportMaster()">💾 EXPORTAR MASTER FINAL</button>
+    <video id="mainVid" playsinline loop></video>
+    <div id="dragLayer">
+        <div id="dragContent" style="font-size: 80px;"></div>
     </div>
 </div>
 
-<input type="file" id="fileIn" accept="video/*" style="display:none" onchange="initV(this.files[0])">
-<input type="file" id="imgIn" accept="image/*" style="display:none" onchange="initI(this.files[0])">
+<div class="controls-area">
+    <div class="card">
+        <h3>Velocidad y Color</h3>
+        <div class="grid">
+            <button class="btn" onclick="setSpeed(0.5)">0.5x</button>
+            <button class="btn" onclick="setSpeed(1)">1.0x</button>
+            <button class="btn" onclick="setSpeed(2)">2.0x</button>
+        </div>
+        <p style="font-size: 10px; margin-top:10px;">Brillo</p>
+        <input type="range" min="0" max="200" value="100" oninput="updateFilter('bri', this.value)">
+        <p style="font-size: 10px;">Contraste</p>
+        <input type="range" min="0" max="200" value="100" oninput="updateFilter('con', this.value)">
+    </div>
+
+    <div class="card">
+        <h3>Filtros y Espejo</h3>
+        <div class="grid">
+            <button class="btn" onclick="setBaseFilter('none')">Orig.</button>
+            <button class="btn" onclick="setBaseFilter('grayscale(1)')">B&N</button>
+            <button class="btn" onclick="setBaseFilter('invert(1)')">Invert</button>
+            <button class="btn" onclick="rotateVid(90)">90°</button>
+            <button class="btn" onclick="flipVid('H')">H-Flip</button>
+            <button class="btn" onclick="flipVid('V')">V-Flip</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Stickers / Logo</h3>
+        <div class="grid">
+            <button class="btn" onclick="document.getElementById('oFile').click()">🖼️ Logo</button>
+            <button class="btn" onclick="setEmoji('🔥')">🔥</button>
+            <button class="btn" onclick="setEmoji('✨')">✨</button>
+        </div>
+        <p style="font-size: 10px; margin-top:10px;">Tamaño Sticker</p>
+        <input type="range" min="20" max="300" value="80" oninput="updateStickerSize(this.value)">
+    </div>
+
+    <button class="export-btn" id="renderBtn" onclick="exportVideo()">GUARDAR VIDEO EDITADO</button>
+</div>
+
+<input type="file" id="vFile" accept="video/*" style="display:none" onchange="loadVideo(this.files[0])">
+<input type="file" id="oFile" accept="image/*" style="display:none" onchange="loadOverlay(this.files[0])">
 
 <script>
-    const v = document.getElementById('vPlayer');
-    const sticker = document.getElementById('stickerLayer');
-    const container = document.getElementById('container');
-    const playhead = document.getElementById('playhead');
+    const vid = document.getElementById('mainVid');
+    const dragLayer = document.getElementById('dragLayer');
+    const dragContent = document.getElementById('dragContent');
     
-    let state = {
-        bri:100, con:100, f:'none', speed:1,
-        x:10, y:10, size:100, 
-        img:null, emoji:'', isDrag:false
+    let config = {
+        bri: 100, con: 100, filter: 'none', 
+        rot: 0, scaleH: 1, scaleV: 1, 
+        speed: 1, stickerSize: 80,
+        posX: 50, posY: 50, overlayImg: null
     };
 
-    function initV(file) {
+    // CARGA
+    function loadVideo(file) {
         if(!file) return;
-        v.src = URL.createObjectURL(file);
-        document.getElementById('loader').style.display = 'none';
-        v.onloadedmetadata = () => { renderWave(file); requestAnimationFrame(sync); };
-        v.play();
+        vid.src = URL.createObjectURL(file);
+        document.getElementById('fileOverlay').style.display = 'none';
+        vid.play();
     }
 
-    async function renderWave(file) {
-        const canvas = document.getElementById('waveCanvas');
-        const ctx = canvas.getContext('2d');
-        const audioCtx = new (AudioContext || webkitAudioContext)();
-        const buffer = await audioCtx.decodeAudioData(await file.arrayBuffer());
-        const data = buffer.getChannelData(0);
-        canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
-        const step = Math.ceil(data.length / canvas.width);
-        ctx.fillStyle = '#00f2ff';
-        for(let i=0; i<canvas.width; i++) {
-            let val = Math.abs(data[i * step]) * canvas.height;
-            ctx.fillRect(i, canvas.height/2 - val/2, 1, val);
-        }
-    }
-
-    function sync() {
-        if(v.duration) playhead.style.left = (v.currentTime / v.duration * 100) + '%';
-        requestAnimationFrame(sync);
-    }
-
-    function updateColor(type, val) {
-        state[type] = val;
-        document.getElementById(type + 'Val').innerText = val;
-        applyFilters();
-    }
-
-    function setF(f, btn) {
-        state.f = f;
-        btn.parentNode.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        applyFilters();
-    }
-
-    function applyFilters() {
-        v.style.filter = `${state.f} brightness(${state.bri}%) contrast(${state.con}%)`;
-    }
-
-    function setSpeed(s, btn) {
-        state.speed = s; v.playbackRate = s;
-        btn.parentNode.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-
-    function initI(file) {
-        const r = new FileReader();
-        r.onload = (e) => {
-            state.img = new Image(); state.img.src = e.target.result;
-            document.getElementById('stickerContent').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%;">`;
-            sticker.style.display = 'block';
+    function loadOverlay(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            config.overlayImg = new Image();
+            config.overlayImg.src = e.target.result;
+            dragContent.innerHTML = `<img src="${e.target.result}" style="width:100%; display:block;">`;
+            dragLayer.style.display = 'block';
         };
-        r.readAsDataURL(file);
+        reader.readAsDataURL(file);
     }
 
     function setEmoji(e) {
-        state.emoji = e; state.img = null;
-        document.getElementById('stickerContent').innerHTML = `<span style="font-size:${state.size}px; line-height:1;">${e}</span>`;
-        sticker.style.display = 'block';
+        config.overlayImg = null;
+        dragContent.innerHTML = e;
+        dragLayer.style.display = 'block';
     }
 
-    function updateScale(val) {
-        state.size = parseInt(val);
-        document.getElementById('szVal').innerText = val;
-        sticker.style.width = val + 'px'; sticker.style.height = val + 'px';
-        if(state.emoji) document.getElementById('stickerContent').firstChild.style.fontSize = val + 'px';
+    // AJUSTES
+    function updateFilter(type, val) {
+        config[type] = val;
+        applyStyles();
     }
 
-    function move(e) {
-        if(!state.isDrag) return;
-        const evt = e.touches ? e.touches[0] : e;
-        const rect = container.getBoundingClientRect();
-        state.x = ((evt.clientX - rect.left - state.size/2) / rect.width) * 100;
-        state.y = ((evt.clientY - rect.top - state.size/2) / rect.height) * 100;
-        sticker.style.left = state.x + '%'; sticker.style.top = state.y + '%';
+    function setBaseFilter(f) {
+        config.filter = f;
+        applyStyles();
     }
 
-    sticker.addEventListener('mousedown', () => state.isDrag = true);
-    sticker.addEventListener('touchstart', () => state.isDrag = true);
-    window.addEventListener('mousemove', move);
-    window.addEventListener('touchmove', move, {passive:false});
-    window.addEventListener('mouseup', () => state.isDrag = false);
-    window.addEventListener('touchend', () => state.isDrag = false);
+    function setSpeed(s) {
+        config.speed = s;
+        vid.playbackRate = s;
+    }
 
-    function toggleP() { v.paused ? v.play() : v.pause(); }
-    function seek(e) { v.currentTime = ((e.clientX - e.currentTarget.getBoundingClientRect().left) / e.currentTarget.offsetWidth) * v.duration; }
+    function rotateVid(deg) { config.rot += deg; applyStyles(); }
+    function flipVid(dir) { 
+        if(dir === 'H') config.scaleH *= -1; 
+        else config.scaleV *= -1; 
+        applyStyles(); 
+    }
 
-    async function exportMaster() {
-        const btn = document.getElementById('exportBtn');
-        btn.innerText = "🚀 PROCESANDO MASTER...";
+    function updateStickerSize(val) {
+        config.stickerSize = val;
+        dragLayer.style.width = val + "px";
+        dragContent.style.fontSize = val + "px";
+    }
+
+    function applyStyles() {
+        vid.style.filter = `${config.filter} brightness(${config.bri}%) contrast(${config.con}%)`;
+        vid.style.transform = `rotate(${config.rot}deg) scale(${config.scaleH}, ${config.scaleV})`;
+    }
+
+    // ARRASTRE
+    let isDragging = false;
+    dragLayer.onpointerdown = () => isDragging = true;
+    window.onpointermove = (e) => {
+        if(!isDragging) return;
+        let rect = document.getElementById('dropZone').getBoundingClientRect();
+        config.posX = ((e.clientX - rect.left) / rect.width) * 100;
+        config.posY = ((e.clientY - rect.top) / rect.height) * 100;
+        dragLayer.style.left = config.posX + "%";
+        dragLayer.style.top = config.posY + "%";
+    };
+    window.onpointerup = () => isDragging = false;
+
+    // EXPORTACIÓN
+    async function exportVideo() {
+        const btn = document.getElementById('renderBtn');
+        btn.innerText = "PROCESANDO... (ESPERA)";
+        
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = v.videoWidth; canvas.height = v.videoHeight;
-        const rec = new MediaRecorder(canvas.captureStream(30), { mimeType: 'video/webm' });
+        canvas.width = vid.videoWidth;
+        canvas.height = vid.videoHeight;
+
+        const stream = canvas.captureStream(30);
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
         const chunks = [];
-        rec.ondataavailable = e => chunks.push(e.data);
-        rec.onstop = () => {
+
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = () => {
             const a = document.createElement('a');
             a.href = URL.createObjectURL(new Blob(chunks, {type:'video/webm'}));
-            a.download = "TITAN_MASTER_FINAL.webm"; a.click();
-            btn.innerText = "💾 EXPORTAR MASTER FINAL";
+            a.download = "video_editado.webm";
+            a.click();
+            btn.innerText = "GUARDAR VIDEO EDITADO";
         };
-        v.currentTime = 0; v.play(); rec.start();
-        function render() {
-            if(v.paused || v.ended) { rec.stop(); return; }
-            ctx.filter = `${state.f} brightness(${state.bri}%) contrast(${state.con}%)`;
-            ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
-            if(sticker.style.display !== 'none') {
-                const rx = (state.x / 100) * canvas.width;
-                const ry = (state.y / 100) * canvas.height;
-                const rs = (state.size / container.offsetWidth) * canvas.width;
-                if(state.img) ctx.drawImage(state.img, rx, ry, rs, rs);
-                else { ctx.font = `${rs}px Arial`; ctx.fillText(state.emoji, rx, ry + rs); }
+
+        vid.currentTime = 0;
+        vid.play();
+        recorder.start();
+
+        function renderFrame() {
+            if(vid.paused || vid.ended) { recorder.stop(); return; }
+            
+            ctx.save();
+            // Aplicar filtros al canvas
+            ctx.filter = `${config.filter} brightness(${config.bri}%) contrast(${config.con}%)`;
+            
+            // Transformación de video
+            ctx.translate(canvas.width/2, canvas.height/2);
+            ctx.rotate(config.rot * Math.PI / 180);
+            ctx.scale(config.scaleH, config.scaleV);
+            ctx.drawImage(vid, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+            ctx.restore();
+
+            // Dibujar Sticker
+            if(dragLayer.style.display !== 'none') {
+                const sX = (config.posX / 100) * canvas.width;
+                const sY = (config.posY / 100) * canvas.height;
+                const sSize = (config.stickerSize / document.getElementById('dropZone').offsetWidth) * canvas.width;
+                
+                if(config.overlayImg) {
+                    ctx.drawImage(config.overlayImg, sX - sSize/2, sY - sSize/2, sSize, sSize);
+                } else {
+                    ctx.font = `${sSize}px Arial`;
+                    ctx.textAlign = "center";
+                    ctx.fillText(dragContent.innerText, sX, sY + sSize/3);
+                }
             }
-            requestAnimationFrame(render);
+            requestAnimationFrame(renderFrame);
         }
-        render();
+        renderFrame();
     }
 </script>
 </body>
 </html>
+
     document.getElementById('progFill').style.width='100%';
     setTimeout(cb,400);
   },2000);
