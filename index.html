@@ -1,406 +1,377 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>CineEdit PRO — Ultimate Gold Edition</title>
-<style>
-:root {
-    --bg: #050508;
-    --panel: #111118;
-    --cyan: #00ffff;
-    --magenta: #ff00ff;
-    --border: rgba(0, 255, 255, 0.2);
-    --text: #e0e0ff;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CineEdit TITAN v5 - Ultra Pro Edition</title>
+    <style>
+        :root {
+            --accent: #00f2ff;
+            --magenta: #ff00ff;
+            --bg: #050508;
+            --panel: #11111a;
+            --text: #e0e0e5;
+            --border: rgba(0, 242, 255, 0.2);
+        }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; padding-bottom: 20px; }
 
-body {
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.4;
-    overflow-x: hidden;
-}
+        /* --- VISOR PROFESIONAL --- */
+        .viewport {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16/9;
+            background: #000;
+            margin: 10px auto;
+            border: 2px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-/* --- LAYOUT RESPONSIVO --- */
-.app-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
+        video { 
+            max-width: 100%; 
+            max-height: 100%; 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.header {
-    padding: 15px 20px;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(10px);
-    border-bottom: 2px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    sticky: top; z-index: 100;
-}
+        #stickerLayer {
+            position: absolute;
+            top: 10%; left: 10%;
+            cursor: move;
+            z-index: 100;
+            touch-action: none;
+            display: none;
+        }
 
-.main-content {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 350px; /* Desktop: Preview a la izquierda, Controles derecha */
-    gap: 15px;
-    padding: 15px;
-    max-width: 1600px;
-    margin: 0 auto;
-    width: 100%;
-}
+        /* --- DASHBOARD DE CONTROLES --- */
+        .editor-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+        }
 
-@media (max-width: 1024px) {
-    .main-content { grid-template-columns: 1fr; } /* Tablet/Móvil: Una sola columna */
-}
+        .card {
+            background: var(--panel);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
 
-/* --- PANEL DE VISTA PREVIA --- */
-.preview-section {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+        .label { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; font-weight: 800; letter-spacing: 1px; }
 
-.viewport {
-    background: #000;
-    border-radius: 12px;
-    border: 2px solid var(--border);
-    position: relative;
-    aspect-ratio: 16/9;
-    overflow: hidden; /* Evita que el video se salga al rotar */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .btn-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 
-video {
-    max-width: 100%;
-    max-height: 100%;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+        .btn {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid #333;
+            padding: 10px 5px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-.sticker-layer {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    font-size: 80px;
-}
+        .btn:hover { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
+        .btn.active { background: var(--accent); color: #000; font-weight: bold; }
 
-/* --- TIMELINE --- */
-.timeline-box {
-    background: var(--panel);
-    border-radius: 12px;
-    padding: 15px;
-    border: 1px solid var(--border);
-}
+        /* --- TIMELINE & WAVEFORM --- */
+        .timeline-box { grid-column: 1 / -1; }
+        .track {
+            height: 60px;
+            background: #000;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .waveform-canvas { width: 100%; height: 100%; opacity: 0.6; }
+        .playhead {
+            position: absolute;
+            top: 0; left: 0;
+            width: 2px; height: 100%;
+            background: var(--magenta);
+            box-shadow: 0 0 15px var(--magenta);
+            z-index: 10;
+        }
 
-.time-track {
-    height: 50px;
-    background: #000;
-    border-radius: 6px;
-    position: relative;
-    cursor: pointer;
-    margin: 10px 0;
-    overflow: hidden;
-}
+        .export-btn {
+            grid-column: 1 / -1;
+            padding: 20px;
+            background: linear-gradient(90deg, var(--accent), var(--magenta));
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-size: 1rem;
+        }
 
-.waveform-bg {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    height: 100%;
-    padding: 0 5px;
-    opacity: 0.4;
-}
-
-.wave-bar { flex: 1; background: var(--cyan); min-height: 2px; }
-
-.playhead {
-    position: absolute;
-    top: 0; left: 0;
-    width: 2px; height: 100%;
-    background: var(--magenta);
-    box-shadow: 0 0 10px var(--magenta);
-    z-index: 5;
-}
-
-/* --- PANELES DE CONTROL --- */
-.side-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-height: 85vh;
-    overflow-y: auto; /* Permite scroll solo en controles */
-    padding-right: 5px;
-}
-
-.control-card {
-    background: var(--panel);
-    border-radius: 10px;
-    padding: 15px;
-    border: 1px solid var(--border);
-}
-
-.card-title {
-    font-size: 0.75rem;
-    color: var(--cyan);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    letter-spacing: 1px;
-    font-weight: bold;
-}
-
-.btn-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-    gap: 8px;
-}
-
-.btn {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    color: #fff;
-    padding: 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.7rem;
-    transition: 0.2s;
-    text-align: center;
-}
-
-.btn:hover { background: var(--cyan); color: #000; }
-.btn-pro { border-color: var(--magenta); color: var(--magenta); }
-.btn-pro:hover { background: var(--magenta); color: #000; }
-
-.export-area {
-    margin-top: auto;
-    padding: 20px 0;
-}
-
-.full-btn {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(90deg, var(--cyan), var(--blue));
-    color: #000;
-    font-weight: 900;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    text-transform: uppercase;
-}
-
-/* Ocultar elementos iniciales */
-#editorUI { display: none; }
-#videoInput { display: none; }
-</style>
+        #loader { text-align: center; width: 100%; }
+    </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header class="header">
-        <div style="font-weight:900; color:var(--cyan)">CINEEDIT <span style="color:var(--magenta)">GOLD</span></div>
-        <div id="statusBadge" style="font-size:0.7rem; opacity:0.6">MODO: ESPERA</div>
-    </header>
-
-    <main class="main-content">
-        <section class="preview-section">
-            <div class="viewport" id="viewport">
-                <div id="dropMsg">
-                    <button class="full-btn" onclick="document.getElementById('videoInput').click()">＋ CARGAR VIDEO</button>
-                </div>
-                <video id="videoPlayer" playsinline></video>
-                <div class="sticker-layer" id="stickerLayer"></div>
-            </div>
-
-            <div class="timeline-box" id="editorUI">
-                <div style="display:flex; justify-content:space-between; font-family:monospace; font-size:0.8rem; margin-bottom:5px">
-                    <span id="curTime">00:00</span>
-                    <span id="totTime">00:00</span>
-                </div>
-                <div class="time-track" id="timeTrack">
-                    <div class="playhead" id="playhead"></div>
-                    <div class="waveform-bg" id="waveform"></div>
-                </div>
-                <div class="btn-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-                    <button class="btn" onclick="video.currentTime -= 1/30">◀ Cuadro</button>
-                    <button class="btn" onclick="togglePlay()" id="playBtn">PAUSA</button>
-                    <button class="btn" onclick="video.currentTime += 1/30">Cuadro ▶</button>
-                </div>
-            </div>
-        </section>
-
-        <aside class="side-panel" id="sidePanel" style="display:none">
-            <div class="control-card">
-                <div class="card-title">Filtros Pro</div>
-                <div class="btn-grid">
-                    <button class="btn" onclick="setF('none')">Orig.</button>
-                    <button class="btn" onclick="setF('grayscale(1)')">Noir</button>
-                    <button class="btn" onclick="setF('sepia(1)')">Sepia</button>
-                    <button class="btn" onclick="setF('hue-rotate(180deg)')">Cold</button>
-                    <button class="btn" onclick="setF('saturate(2)')">Vivid</button>
-                    <button class="btn" onclick="setF('invert(1)')">Inv.</button>
-                </div>
-            </div>
-
-            <div class="control-card">
-                <div class="card-title">Transformar</div>
-                <div class="btn-grid">
-                    <button class="btn" onclick="rot(-90)">↺ -90</button>
-                    <button class="btn" onclick="rot(90)">90 ↻</button>
-                    <button class="btn" onclick="flp('H')">↔ Mirror</button>
-                    <button class="btn" onclick="flp('V')">↕ Flip</button>
-                    <button class="btn" onclick="resTr()">Reset</button>
-                </div>
-            </div>
-
-            <div class="control-card">
-                <div class="card-title">Stickers</div>
-                <div class="btn-grid">
-                    <button class="btn" onclick="setSt('🔥')">🔥</button>
-                    <button class="btn" onclick="setSt('✨')">✨</button>
-                    <button class="btn" onclick="setSt('🎬')">🎬</button>
-                    <button class="btn" onclick="setSt('❤️')">❤️</button>
-                    <button class="btn" onclick="setSt('')">🚫</button>
-                </div>
-            </div>
-
-            <div class="export-area">
-                <button class="full-btn" style="background:var(--magenta)" onclick="exportPro()">💾 EXPORTAR VIDEO FINAL</button>
-            </div>
-        </aside>
-    </main>
+<div class="viewport" id="container">
+    <video id="vPlayer" playsinline></video>
+    <div id="stickerLayer">
+        <div id="stickerContent"></div>
+    </div>
+    <div id="loader">
+        <button class="btn" style="padding:15px 30px" onclick="document.getElementById('fileIn').click()">ABRIR VIDEO TITAN</button>
+    </div>
 </div>
 
-<input type="file" id="videoInput" accept="video/*" onchange="initApp(this.files[0])">
+<div class="editor-grid">
+    <div class="card">
+        <div class="label">Velocidad (Time Remapping)</div>
+        <div class="btn-group">
+            <button class="btn" onclick="setSpeed(0.5, this)">0.5x</button>
+            <button class="btn active" onclick="setSpeed(1.0, this)">Normal</button>
+            <button class="btn" onclick="setSpeed(1.5, this)">1.5x</button>
+            <button class="btn" onclick="setSpeed(2.0, this)">2.0x</button>
+            <button class="btn" onclick="setSpeed(4.0, this)">4.0x</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="label">Efectos Visuales</div>
+        <div class="btn-group">
+            <button class="btn active" onclick="setF('none', this)">Original</button>
+            <button class="btn" onclick="setF('grayscale(1)', this)">Noir</button>
+            <button class="btn" onclick="setF('sepia(1) contrast(1.2)', this)">Vintage</button>
+            <button class="btn" onclick="setF('hue-rotate(180deg)', this)">Arctic</button>
+            <button class="btn" onclick="setF('saturate(3)', this)">Vivid</button>
+            <button class="btn" onclick="setF('invert(1)', this)">Invert</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="label">Posición y Espejo</div>
+        <div class="btn-group">
+            <button class="btn" onclick="setR(-90)">↺ -90</button>
+            <button class="btn" onclick="setR(90)">90 ↻</button>
+            <button class="btn" onclick="setFlip('H')">↔ Espejo</button>
+            <button class="btn" onclick="setFlip('V')">↕ Volteo</button>
+            <button class="btn" style="grid-column: span 2" onclick="resetTrans()">Reset</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="label">Superposición (Drag & Scale)</div>
+        <div class="btn-group" style="margin-bottom:10px">
+            <button class="btn" onclick="document.getElementById('imgIn').click()">🖼️ Logo</button>
+            <button class="btn" onclick="setEmoji('🔥')">🔥</button>
+            <button class="btn" onclick="setEmoji('✨')">✨</button>
+        </div>
+        <div class="label">Escala: <span id="sizeTxt">100</span>px</div>
+        <input type="range" style="width:100%" min="30" max="500" value="100" oninput="updateScale(this.value)">
+    </div>
+
+    <div class="card timeline-box">
+        <div class="label">Master Timeline & Waveform</div>
+        <div class="track" id="track">
+            <div class="playhead" id="playhead"></div>
+            <canvas id="waveCanvas" class="waveform-canvas"></canvas>
+        </div>
+        <div style="display:flex; justify-content: space-between; gap:10px">
+            <button class="btn" onclick="v.currentTime -= 1/30">◀ Frame</button>
+            <button class="btn" style="flex:2; font-weight: bold; background: var(--border);" onclick="toggleP()" id="pBtn">REPRODUCIR</button>
+            <button class="btn" onclick="v.currentTime += 1/30">Frame ▶</button>
+            <button class="btn" onclick="togglePiP()">📺 PiP</button>
+        </div>
+    </div>
+
+    <button class="export-btn" id="exportBtn" onclick="exportMaster()">💾 EXPORTAR MASTER FINAL</button>
+</div>
+
+<input type="file" id="fileIn" accept="video/*" style="display:none" onchange="initV(this.files[0])">
+<input type="file" id="imgIn" accept="image/*" style="display:none" onchange="initI(this.files[0])">
 
 <script>
-// --- MOTOR DE LA APLICACIÓN (Encapsulado para evitar errores) ---
-const video = document.getElementById('videoPlayer');
-let state = { r: 0, h: 1, v: 1, f: 'none', s: '', dur: 0 };
-
-function initApp(file) {
-    if(!file) return;
-    const url = URL.createObjectURL(file);
-    video.src = url;
+    const v = document.getElementById('vPlayer');
+    const sticker = document.getElementById('stickerLayer');
+    const container = document.getElementById('container');
+    const playhead = document.getElementById('playhead');
     
-    document.getElementById('dropMsg').style.display = 'none';
-    document.getElementById('editorUI').style.display = 'block';
-    document.getElementById('sidePanel').style.display = 'flex';
-    document.getElementById('statusBadge').innerText = "MODO: EDITANDO";
-
-    video.onloadedmetadata = () => {
-        state.dur = video.duration;
-        document.getElementById('totTime').innerText = fmt(video.duration);
-        drawWave();
-        loop();
+    let state = {
+        r:0, h:1, v_sc:1, f:'none', speed:1.0,
+        x:10, y:10, size:100, 
+        img:null, emoji:'', isDrag:false
     };
-    
-    // Web Audio API para Waveform Real
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const data = await ctx.decodeAudioData(e.target.result);
-        const raw = data.getChannelData(0);
-        drawWave(raw);
-    };
-    reader.readAsArrayBuffer(file);
-}
 
-function loop() {
-    document.getElementById('curTime').innerText = fmt(video.currentTime);
-    const p = (video.currentTime / video.duration) * 100;
-    document.getElementById('playhead').style.left = p + '%';
-    requestAnimationFrame(loop);
-}
-
-function fmt(s) {
-    return Math.floor(s/60) + ":" + Math.floor(s%60).toString().padStart(2,'0');
-}
-
-// Controles
-function setF(f) { state.f = f; video.style.filter = f; }
-function rot(d) { state.r += d; updateTr(); }
-function flp(d) { d==='H' ? state.h*=-1 : state.v*=-1; updateTr(); }
-function updateTr() { video.style.transform = `rotate(${state.r}deg) scale(${state.h},${state.v})`; }
-function resTr() { state.r=0; state.h=1; state.v=1; updateTr(); }
-function setSt(s) { state.s = s; document.getElementById('stickerLayer').innerText = s; }
-function togglePlay() { 
-    video.paused ? video.play() : video.pause(); 
-    document.getElementById('playBtn').innerText = video.paused ? "PLAY" : "PAUSA";
-}
-
-// Waveform
-function drawWave(data = null) {
-    const container = document.getElementById('waveform');
-    container.innerHTML = '';
-    const samples = 60;
-    for(let i=0; i<samples; i++) {
-        const b = document.createElement('div');
-        b.className = 'wave-bar';
-        let h = data ? Math.abs(data[Math.floor(i * data.length / samples)]) * 200 : Math.random() * 40;
-        b.style.height = Math.max(5, h) + '%';
-        container.appendChild(b);
+    // --- VELOCIDAD ---
+    function setSpeed(s, btn) {
+        state.speed = s;
+        v.playbackRate = s;
+        const btns = btn.parentNode.querySelectorAll('.btn');
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
     }
-}
 
-// Exportación REAL PRO (Graba filtros y rotación)
-async function exportPro() {
-    if(!video.src) return;
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    // --- INICIO & WAVEFORM ---
+    async function initV(file) {
+        if(!file) return;
+        v.src = URL.createObjectURL(file);
+        document.getElementById('loader').style.display = 'none';
+        v.onloadedmetadata = () => {
+            renderWave(file);
+            requestAnimationFrame(sync);
+        };
+        v.play();
+    }
 
-    const stream = canvas.captureStream(30);
-    const rec = new MediaRecorder(stream, { mimeType: 'video/webm' });
-    const chunks = [];
-
-    rec.ondataavailable = e => chunks.push(e.data);
-    rec.onstop = () => {
-        const url = URL.createObjectURL(new Blob(chunks, {type:'video/webm'}));
-        const a = document.createElement('a');
-        a.href = url; a.download = "Edited_Video.webm"; a.click();
-    };
-
-    video.currentTime = 0;
-    video.play();
-    rec.start();
-    
-    function render() {
-        if(video.paused || video.ended) { rec.stop(); return; }
-        ctx.save();
-        ctx.filter = state.f;
-        ctx.translate(canvas.width/2, canvas.height/2);
-        ctx.rotate(state.r * Math.PI / 180);
-        ctx.scale(state.h, state.v);
-        ctx.drawImage(video, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
-        if(state.s) {
-            ctx.font = (canvas.width/5) + "px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText(state.s, 0, canvas.width/20);
+    async function renderWave(file) {
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const buffer = await audioCtx.decodeAudioData(await file.arrayBuffer());
+        const data = buffer.getChannelData(0);
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        const step = Math.ceil(data.length / canvas.width);
+        ctx.fillStyle = '#00f2ff';
+        for(let i=0; i<canvas.width; i++) {
+            let val = Math.abs(data[i * step]) * canvas.height;
+            ctx.fillRect(i, canvas.height/2 - val/2, 1, val);
         }
-        ctx.restore();
-        requestAnimationFrame(render);
     }
-    render();
-    alert("Exportando... No pauses el video.");
-}
 
-// Timeline click
-document.getElementById('timeTrack').onclick = (e) => {
-    const rect = document.getElementById('timeTrack').getBoundingClientRect();
-    video.currentTime = ((e.clientX - rect.left) / rect.width) * video.duration;
-};
+    function sync() {
+        if(v.duration) {
+            const p = (v.currentTime / v.duration) * 100;
+            playhead.style.left = p + '%';
+        }
+        requestAnimationFrame(sync);
+    }
+
+    // --- FILTROS & TRANSFORM ---
+    function setF(f, btn) {
+        state.f = f; v.style.filter = f;
+        const btns = btn.parentNode.querySelectorAll('.btn');
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    function setR(d) { state.r += d; applyT(); }
+    function setFlip(m) { m === 'H' ? state.h *= -1 : state.v_sc *= -1; applyT(); }
+    function applyT() { v.style.transform = `rotate(${state.r}deg) scale(${state.h}, ${state.v_sc})`; }
+    function resetTrans() { state.r=0; state.h=1; state.v_sc=1; applyT(); }
+
+    // --- STICKERS ---
+    function initI(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            state.img = new Image();
+            state.img.src = e.target.result;
+            state.emoji = '';
+            document.getElementById('stickerContent').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%;">`;
+            sticker.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function setEmoji(e) {
+        state.emoji = e; state.img = null;
+        document.getElementById('stickerContent').innerHTML = `<span style="font-size:${state.size}px">${e}</span>`;
+        sticker.style.display = 'block';
+    }
+
+    function updateScale(val) {
+        state.size = parseInt(val);
+        document.getElementById('sizeTxt').innerText = val;
+        sticker.style.width = val + 'px';
+        sticker.style.height = val + 'px';
+        if(state.emoji) document.getElementById('stickerContent').firstChild.style.fontSize = val + 'px';
+    }
+
+    // --- DRAG ---
+    function move(e) {
+        if(!state.isDrag) return;
+        const evt = e.touches ? e.touches[0] : e;
+        const rect = container.getBoundingClientRect();
+        state.x = ((evt.clientX - rect.left - state.size/2) / rect.width) * 100;
+        state.y = ((evt.clientY - rect.top - state.size/2) / rect.height) * 100;
+        sticker.style.left = state.x + '%';
+        sticker.style.top = state.y + '%';
+    }
+
+    sticker.addEventListener('mousedown', () => state.isDrag = true);
+    sticker.addEventListener('touchstart', () => state.isDrag = true);
+    window.addEventListener('mousemove', move);
+    window.addEventListener('touchmove', move, {passive:false});
+    window.addEventListener('mouseup', () => state.isDrag = false);
+    window.addEventListener('touchend', () => state.isDrag = false);
+
+    function toggleP() { v.paused ? v.play() : v.pause(); }
+    async function togglePiP() { if(v.readyState > 2) v.requestPictureInPicture(); }
+
+    // --- EXPORTACIÓN MASTER FINAL ---
+    async function exportMaster() {
+        const btn = document.getElementById('exportBtn');
+        btn.innerText = "🚀 RENDERIZANDO... ESPERE";
+        btn.disabled = true;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = v.videoWidth; canvas.height = v.videoHeight;
+        
+        const stream = canvas.captureStream(30);
+        const rec = new MediaRecorder(stream, { mimeType: 'video/webm' });
+        const chunks = [];
+        rec.ondataavailable = e => chunks.push(e.data);
+        rec.onstop = () => {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob(chunks, {type:'video/webm'}));
+            a.download = "TITAN_MASTER_EDIT.webm"; a.click();
+            btn.innerText = "💾 EXPORTAR MASTER FINAL";
+            btn.disabled = false;
+        };
+
+        v.playbackRate = state.speed; 
+        v.currentTime = 0; v.play(); rec.start();
+        
+        function render() {
+            if(v.paused || v.ended) { rec.stop(); return; }
+            ctx.save();
+            ctx.filter = state.f;
+            ctx.translate(canvas.width/2, canvas.height/2);
+            ctx.rotate(state.r * Math.PI / 180);
+            ctx.scale(state.h, state.v_sc);
+            ctx.drawImage(v, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+            ctx.restore();
+
+            if(sticker.style.display !== 'none') {
+                const rx = (state.x / 100) * canvas.width;
+                const ry = (state.y / 100) * canvas.height;
+                const rs = (state.size / container.offsetWidth) * canvas.width;
+                if(state.img) ctx.drawImage(state.img, rx, ry, rs, rs);
+                else { 
+                    ctx.font = `${rs}px Arial`; 
+                    ctx.fillStyle = "white";
+                    ctx.fillText(state.emoji, rx, ry + rs); 
+                }
+            }
+            requestAnimationFrame(render);
+        }
+        render();
+    }
+
+    document.getElementById('track').onclick = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        v.currentTime = ((e.clientX - rect.left) / rect.width) * v.duration;
+    };
 </script>
-
 </body>
 </html>
-
     document.getElementById('progFill').style.width='100%';
     setTimeout(cb,400);
   },2000);
