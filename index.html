@@ -3,268 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CineEdit TITAN REBORN</title>
+    <title>CINEEDIT GOLD - Versión Unificada</title>
     <style>
-        :root { --accent: #00f2ff; --bg: #0a0a0c; --card: #16161e; --text: #eee; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        :root {
+            --neon-cyan: #00d2ff;
+            --neon-pink: #ff00ff;
+            --bg: #000000;
+            --panel: #0a0a0f;
+        }
 
-        /* Pantalla de Video */
-        .preview-area {
-            flex: 0 0 40%;
-            background: #000;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: white; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* HEADER */
+        .header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .logo { color: var(--neon-pink); font-weight: 900; font-size: 1.4rem; letter-spacing: 1px; }
+        .logo span { color: white; font-weight: 300; }
+
+        /* VISOR (Imagen 1 y 2) */
+        .main-view {
+            width: 95%;
+            max-width: 600px;
+            aspect-ratio: 16/9;
+            margin: 10px auto;
+            border: 1px solid #11d9e8;
+            border-radius: 12px;
             position: relative;
+            background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 2px solid #222;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.1);
         }
-        video { max-width: 100%; max-height: 100%; }
 
-        /* Capa de Arrastre */
-        #dragLayer {
+        video { width: 100%; height: 100%; object-fit: contain; }
+
+        /* BOTÓN SELECCIONAR ORIGINAL */
+        .select-btn {
+            background: linear-gradient(90deg, #00d2ff, #0072ff);
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* CAPA DE STICKERS ARRASTRABLE */
+        #stickerLayer {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
+            z-index: 100;
             cursor: move;
             touch-action: none;
+            user-select: none;
             display: none;
-            border: 1px dashed var(--accent);
         }
 
-        /* Panel de Controles */
-        .controls-area {
+        /* PANEL DE CONTROLES (Imagen 3) */
+        .controls {
             flex: 1;
             overflow-y: auto;
             padding: 15px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+            background: var(--panel);
         }
 
-        .card { background: var(--card); padding: 12px; border-radius: 8px; border: 1px solid #333; }
-        h3 { font-size: 0.7rem; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; }
-
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-        .btn {
-            background: #252530; color: #fff; border: none; padding: 8px;
-            border-radius: 4px; font-size: 0.7rem; cursor: pointer;
-        }
-        .btn:active { background: var(--accent); color: #000; }
+        .label { font-size: 0.8rem; margin: 15px 0 8px; color: #ccc; }
         
-        input[type=range] { width: 100%; accent-color: var(--accent); margin: 8px 0; }
-
-        .export-btn {
-            grid-column: 1 / -1;
-            background: linear-gradient(to right, #00f2ff, #0077ff);
-            color: #000; font-weight: bold; padding: 15px; border: none; border-radius: 8px;
-            cursor: pointer; margin-bottom: 20px;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
-        #fileOverlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.8);
-            display: flex; align-items: center; justify-content: center; z-index: 100;
+        /* Botones de Herramientas Blancos (Original) */
+        .tool {
+            background: #ffffff;
+            color: #111;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .tool span { font-size: 1.2rem; margin-bottom: 2px; }
+
+        /* SLIDERS */
+        .slider-box { margin-bottom: 20px; }
+        input[type=range] {
+            width: 100%;
+            height: 5px;
+            accent-color: var(--neon-cyan);
+            background: #333;
+            border-radius: 5px;
+            appearance: none;
+        }
+
+        /* EMOJIS */
+        .emoji-bar {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 10px 0;
+            font-size: 1.6rem;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .emoji-bar span { cursor: pointer; }
+
+        /* CALIDAD (Imagen 3) */
+        .quality-box { margin-top: 20px; padding-bottom: 40px; }
+        .q-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #1a1a1a;
+            color: #888;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .q-item b { color: #eee; display: block; }
+
+        .export-master {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            border: none;
+            color: white;
+            font-weight: 900;
+            border-radius: 8px;
+            margin-top: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="preview-area" id="dropZone">
-    <div id="fileOverlay">
-        <button class="export-btn" onclick="document.getElementById('vFile').click()">SELECCIONAR VIDEO</button>
+<div class="header">
+    <div class="logo">CINEEDIT <span>GOLD</span></div>
+    <div style="font-size: 0.7rem; color: #555;">MODO: ESPERA</div>
+</div>
+
+<div class="main-view" id="dropZone">
+    <button class="select-btn" id="ui-load" onclick="document.getElementById('fileIn').click()">
+        <span>+</span> SELECCIONAR VIDEO
+    </button>
+    <video id="vPlayer" playsinline loop></video>
+    <div id="stickerLayer">🔥</div>
+</div>
+
+<div class="controls">
+    <div class="slider-box">
+        <p style="font-size: 0.8rem; margin-bottom:5px;">💫 Blur <span id="blurVal">0px</span></p>
+        <input type="range" min="0" max="20" value="0" oninput="apply('blur', this.value)">
     </div>
-    <video id="mainVid" playsinline loop></video>
-    <div id="dragLayer">
-        <div id="dragContent" style="font-size: 80px;"></div>
+
+    <div class="label">Efectos Visuales</div>
+    <div class="grid">
+        <button class="tool" onclick="apply('vignette')"><span>🌑</span>Vignette</button>
+        <button class="tool" onclick="apply('sharpen')"><span>🔍</span>Sharpen</button>
+        <button class="tool" onclick="apply('glow')"><span>✨</span>Glow</button>
+        <button class="tool" onclick="apply('invert')"><span>🔃</span>Invert</button>
+    </div>
+
+    <div class="label">Rotación</div>
+    <div class="grid">
+        <button class="tool" onclick="trans('r', -90)"><span>↶</span>-90°</button>
+        <button class="tool" onclick="trans('r', 90)"><span>↷</span>+90°</button>
+        <button class="tool" onclick="trans('r', 180)"><span>↻</span>180°</button>
+        <button class="tool" onclick="trans('reset')"><span>⊙</span>Reset</button>
+    </div>
+
+    <div class="label">Voltear</div>
+    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+        <button class="tool" onclick="trans('h')"><span>↔</span>Horizontal</button>
+        <button class="tool" onclick="trans('v')"><span>↕</span>Vertical</button>
+    </div>
+
+    <div class="label">Emojis & Stickers</div>
+    <div class="emoji-bar">
+        <span onclick="putEmoji('❤️')">❤️</span>
+        <span onclick="putEmoji('🔥')">🔥</span>
+        <span onclick="putEmoji('⭐')">⭐</span>
+        <span onclick="putEmoji('💯')">💯</span>
+        <span onclick="putEmoji('🎬')">🎬</span>
+        <span onclick="putEmoji('✨')">✨</span>
+        <span onclick="putEmoji('😍')">😍</span>
+        <span onclick="putEmoji('🏆')">🏆</span>
+    </div>
+
+    <div class="quality-box">
+        <div class="label">Calidad de Exportación</div>
+        <div class="q-item" onclick="setQ(720)"><b>720p</b> 1280x720</div>
+        <div class="q-item" onclick="setQ(1080)"><b>1080p Full HD</b> 1920x1080</div>
+        <button class="export-master" onclick="renderVideo()">GUARDAR MASTER FINAL</button>
     </div>
 </div>
 
-<div class="controls-area">
-    <div class="card">
-        <h3>Velocidad y Color</h3>
-        <div class="grid">
-            <button class="btn" onclick="setSpeed(0.5)">0.5x</button>
-            <button class="btn" onclick="setSpeed(1)">1.0x</button>
-            <button class="btn" onclick="setSpeed(2)">2.0x</button>
-        </div>
-        <p style="font-size: 10px; margin-top:10px;">Brillo</p>
-        <input type="range" min="0" max="200" value="100" oninput="updateFilter('bri', this.value)">
-        <p style="font-size: 10px;">Contraste</p>
-        <input type="range" min="0" max="200" value="100" oninput="updateFilter('con', this.value)">
-    </div>
-
-    <div class="card">
-        <h3>Filtros y Espejo</h3>
-        <div class="grid">
-            <button class="btn" onclick="setBaseFilter('none')">Orig.</button>
-            <button class="btn" onclick="setBaseFilter('grayscale(1)')">B&N</button>
-            <button class="btn" onclick="setBaseFilter('invert(1)')">Invert</button>
-            <button class="btn" onclick="rotateVid(90)">90°</button>
-            <button class="btn" onclick="flipVid('H')">H-Flip</button>
-            <button class="btn" onclick="flipVid('V')">V-Flip</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>Stickers / Logo</h3>
-        <div class="grid">
-            <button class="btn" onclick="document.getElementById('oFile').click()">🖼️ Logo</button>
-            <button class="btn" onclick="setEmoji('🔥')">🔥</button>
-            <button class="btn" onclick="setEmoji('✨')">✨</button>
-        </div>
-        <p style="font-size: 10px; margin-top:10px;">Tamaño Sticker</p>
-        <input type="range" min="20" max="300" value="80" oninput="updateStickerSize(this.value)">
-    </div>
-
-    <button class="export-btn" id="renderBtn" onclick="exportVideo()">GUARDAR VIDEO EDITADO</button>
-</div>
-
-<input type="file" id="vFile" accept="video/*" style="display:none" onchange="loadVideo(this.files[0])">
-<input type="file" id="oFile" accept="image/*" style="display:none" onchange="loadOverlay(this.files[0])">
+<input type="file" id="fileIn" accept="video/*" style="display:none" onchange="loadVid(this.files[0])">
 
 <script>
-    const vid = document.getElementById('mainVid');
-    const dragLayer = document.getElementById('dragLayer');
-    const dragContent = document.getElementById('dragContent');
+    const v = document.getElementById('vPlayer');
+    const st = document.getElementById('stickerLayer');
+    const zone = document.getElementById('dropZone');
     
-    let config = {
-        bri: 100, con: 100, filter: 'none', 
-        rot: 0, scaleH: 1, scaleV: 1, 
-        speed: 1, stickerSize: 80,
-        posX: 50, posY: 50, overlayImg: null
-    };
+    let cfg = { blur:0, rot:0, h:1, v:1, x:50, y:50, emoji:'🔥', q:1080 };
 
-    // CARGA
-    function loadVideo(file) {
+    function loadVid(file) {
         if(!file) return;
-        vid.src = URL.createObjectURL(file);
-        document.getElementById('fileOverlay').style.display = 'none';
-        vid.play();
+        v.src = URL.createObjectURL(file);
+        document.getElementById('ui-load').style.display = 'none';
+        v.play();
     }
 
-    function loadOverlay(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            config.overlayImg = new Image();
-            config.overlayImg.src = e.target.result;
-            dragContent.innerHTML = `<img src="${e.target.result}" style="width:100%; display:block;">`;
-            dragLayer.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+    function apply(type, val) {
+        if(type === 'blur') {
+            cfg.blur = val;
+            document.getElementById('blurVal').innerText = val + 'px';
+        }
+        if(type === 'invert') v.style.filter = v.style.filter.includes('invert') ? '' : 'invert(1)';
+        v.style.filter = `blur(${cfg.blur}px)`;
     }
 
-    function setEmoji(e) {
-        config.overlayImg = null;
-        dragContent.innerHTML = e;
-        dragLayer.style.display = 'block';
+    function trans(type, val) {
+        if(type === 'r') cfg.rot += val;
+        if(type === 'h') cfg.h *= -1;
+        if(type === 'v') cfg.v *= -1;
+        if(type === 'reset') { cfg.rot=0; cfg.h=1; cfg.v=1; }
+        v.style.transform = `rotate(${cfg.rot}deg) scale(${cfg.h}, ${cfg.v})`;
     }
 
-    // AJUSTES
-    function updateFilter(type, val) {
-        config[type] = val;
-        applyStyles();
+    function putEmoji(e) {
+        cfg.emoji = e;
+        st.innerText = e;
+        st.style.display = 'block';
     }
 
-    function setBaseFilter(f) {
-        config.filter = f;
-        applyStyles();
-    }
-
-    function setSpeed(s) {
-        config.speed = s;
-        vid.playbackRate = s;
-    }
-
-    function rotateVid(deg) { config.rot += deg; applyStyles(); }
-    function flipVid(dir) { 
-        if(dir === 'H') config.scaleH *= -1; 
-        else config.scaleV *= -1; 
-        applyStyles(); 
-    }
-
-    function updateStickerSize(val) {
-        config.stickerSize = val;
-        dragLayer.style.width = val + "px";
-        dragContent.style.fontSize = val + "px";
-    }
-
-    function applyStyles() {
-        vid.style.filter = `${config.filter} brightness(${config.bri}%) contrast(${config.con}%)`;
-        vid.style.transform = `rotate(${config.rot}deg) scale(${config.scaleH}, ${config.scaleV})`;
-    }
-
-    // ARRASTRE
-    let isDragging = false;
-    dragLayer.onpointerdown = () => isDragging = true;
+    // ARRASTRE MEJORADO
+    let drag = false;
+    st.onpointerdown = () => drag = true;
     window.onpointermove = (e) => {
-        if(!isDragging) return;
-        let rect = document.getElementById('dropZone').getBoundingClientRect();
-        config.posX = ((e.clientX - rect.left) / rect.width) * 100;
-        config.posY = ((e.clientY - rect.top) / rect.height) * 100;
-        dragLayer.style.left = config.posX + "%";
-        dragLayer.style.top = config.posY + "%";
+        if(!drag) return;
+        let r = zone.getBoundingClientRect();
+        cfg.x = ((e.clientX - r.left) / r.width) * 100;
+        cfg.y = ((e.clientY - r.top) / r.height) * 100;
+        st.style.left = cfg.x + '%';
+        st.style.top = cfg.y + '%';
     };
-    window.onpointerup = () => isDragging = false;
+    window.onpointerup = () => drag = false;
 
-    // EXPORTACIÓN
-    async function exportVideo() {
-        const btn = document.getElementById('renderBtn');
-        btn.innerText = "PROCESANDO... (ESPERA)";
-        
+    // MOTOR DE EXPORTACIÓN (Mejora añadida)
+    async function renderVideo() {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = vid.videoWidth;
-        canvas.height = vid.videoHeight;
-
-        const stream = canvas.captureStream(30);
-        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+        canvas.width = v.videoWidth;
+        canvas.height = v.videoHeight;
+        
+        const rec = new MediaRecorder(canvas.captureStream(30), { mimeType: 'video/webm' });
         const chunks = [];
-
-        recorder.ondataavailable = e => chunks.push(e.data);
-        recorder.onstop = () => {
+        rec.ondataavailable = e => chunks.push(e.data);
+        rec.onstop = () => {
             const a = document.createElement('a');
             a.href = URL.createObjectURL(new Blob(chunks, {type:'video/webm'}));
-            a.download = "video_editado.webm";
+            a.download = "CineEdit_Gold_Master.webm";
             a.click();
-            btn.innerText = "GUARDAR VIDEO EDITADO";
         };
 
-        vid.currentTime = 0;
-        vid.play();
-        recorder.start();
-
-        function renderFrame() {
-            if(vid.paused || vid.ended) { recorder.stop(); return; }
-            
+        v.currentTime = 0; v.play(); rec.start();
+        
+        const draw = () => {
+            if(v.paused || v.ended) { rec.stop(); return; }
             ctx.save();
-            // Aplicar filtros al canvas
-            ctx.filter = `${config.filter} brightness(${config.bri}%) contrast(${config.con}%)`;
-            
-            // Transformación de video
+            ctx.filter = v.style.filter;
             ctx.translate(canvas.width/2, canvas.height/2);
-            ctx.rotate(config.rot * Math.PI / 180);
-            ctx.scale(config.scaleH, config.scaleV);
-            ctx.drawImage(vid, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+            ctx.rotate(cfg.rot * Math.PI / 180);
+            ctx.scale(cfg.h, cfg.v);
+            ctx.drawImage(v, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
             ctx.restore();
 
-            // Dibujar Sticker
-            if(dragLayer.style.display !== 'none') {
-                const sX = (config.posX / 100) * canvas.width;
-                const sY = (config.posY / 100) * canvas.height;
-                const sSize = (config.stickerSize / document.getElementById('dropZone').offsetWidth) * canvas.width;
-                
-                if(config.overlayImg) {
-                    ctx.drawImage(config.overlayImg, sX - sSize/2, sY - sSize/2, sSize, sSize);
-                } else {
-                    ctx.font = `${sSize}px Arial`;
-                    ctx.textAlign = "center";
-                    ctx.fillText(dragContent.innerText, sX, sY + sSize/3);
-                }
+            if(st.style.display !== 'none') {
+                ctx.font = `${canvas.width/10}px Arial`;
+                ctx.fillText(cfg.emoji, (cfg.x/100)*canvas.width, (cfg.y/100)*canvas.height);
             }
-            requestAnimationFrame(renderFrame);
-        }
-        renderFrame();
+            requestAnimationFrame(draw);
+        };
+        draw();
     }
 </script>
 </body>
